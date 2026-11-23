@@ -2,6 +2,7 @@
 set -eu
 src=/work/plyrune
 head=$(git -C "$src" rev-parse HEAD)
+git config --global --add safe.directory "$src/.git"
 git clone --quiet --no-local "$src" /tmp/plyrune-proof
 cd /tmp/plyrune-proof
 git checkout --quiet --detach "$head"
