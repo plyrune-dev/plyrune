@@ -1,0 +1,6 @@
+# Files published to the public site repository. One path per line, relative to website/.
+# Everything else under website/ (concept PNGs, DESIGN.md, PROMPTS.md, tools/) stays private.
+# Keep this list explicit: stage.sh copies ONLY these paths, and nothing is published without
+# being listed here.
+index.html
+.nojekyll
