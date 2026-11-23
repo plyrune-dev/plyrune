@@ -63,3 +63,35 @@ file = "crates/plyrune-kernel/src/range.rs"
 before = "start > end || end > len"
 after = "end > len"
 direct = ["Proofs.Range.admit_spec"]
+
+[[claim]]
+crate = "plyrune-kernel"
+file = "crates/plyrune-kernel/src/range.rs"
+function = "char_boundary"
+lean = "plyrune_kernel.range.char_boundary"
+theorems = ["Proofs.Text.boundary_spec"]
+total = "Proofs.Text.boundary_spec"
+mutants = ["accept-continuation"]
+
+[[mutant]]
+name = "accept-continuation"
+file = "crates/plyrune-kernel/src/range.rs"
+before = "Some(byte) => !is_continuation(*byte)"
+after = "Some(byte) => is_continuation(*byte)"
+direct = ["Proofs.Text.boundary_spec"]
+
+[[claim]]
+crate = "plyrune-kernel"
+file = "crates/plyrune-kernel/src/range.rs"
+function = "admit_text"
+lean = "plyrune_kernel.range.admit_text"
+theorems = ["Proofs.Text.admit_text_spec"]
+total = "Proofs.Text.admit_text_spec"
+mutants = ["ignore-end-boundary"]
+
+[[mutant]]
+name = "ignore-end-boundary"
+file = "crates/plyrune-kernel/src/range.rs"
+before = "char_boundary(bytes, start) && char_boundary(bytes, end)"
+after = "char_boundary(bytes, start)"
+direct = ["Proofs.Text.admit_text_spec"]

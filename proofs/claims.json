@@ -4,6 +4,56 @@
   "claims": [
     {
       "crate": "plyrune-kernel",
+      "file": "crates/plyrune-kernel/src/binding.rs",
+      "function": "same_store",
+      "lean": "plyrune_kernel.binding.same_store",
+      "theorems": [
+        "Proofs.Binding.same_store_spec"
+      ],
+      "total": "Proofs.Binding.same_store_spec",
+      "subsumes": [],
+      "mutants": [
+        "ignore-owner",
+        "ignore-incarnation"
+      ],
+      "outcome": "proved",
+      "badge": "proved",
+      "fingerprint": "fnv1a64:2440ea72fbecbe9c",
+      "inputs": {
+        "lean:binding.IncarnationId": "fnv1a64:a6a275ffb90951c4",
+        "lean:binding.OwnerId": "fnv1a64:d24063bf5fe6730a",
+        "lean:binding.StoreBinding": "fnv1a64:967184e3e43d0d5a",
+        "lean:binding.same_store": "fnv1a64:a2ef229ee3180126",
+        "mutant:ignore-incarnation": "fnv1a64:21fb720083b87f9e",
+        "mutant:ignore-owner": "fnv1a64:cce4f5ebc3201e84",
+        "proof:Proofs/PlyruneKernel.lean": "fnv1a64:966e5d55c1a962a4",
+        "toolchain": "fnv1a64:bb9e124c5c1e30bd"
+      },
+      "mutant_results": [
+        {
+          "mutant": "ignore-owner",
+          "status": "killed",
+          "broken": [
+            "Proofs.Binding.same_store_spec"
+          ],
+          "direct": [
+            "Proofs.Binding.same_store_spec"
+          ]
+        },
+        {
+          "mutant": "ignore-incarnation",
+          "status": "killed",
+          "broken": [
+            "Proofs.Binding.same_store_spec"
+          ],
+          "direct": [
+            "Proofs.Binding.same_store_spec"
+          ]
+        }
+      ]
+    },
+    {
+      "crate": "plyrune-kernel",
       "file": "crates/plyrune-kernel/src/range.rs",
       "function": "admit",
       "lean": "plyrune_kernel.range.admit",
@@ -18,13 +68,13 @@
       ],
       "outcome": "proved",
       "badge": "proved",
-      "fingerprint": "fnv1a64:30928128ecfe2a8a",
+      "fingerprint": "fnv1a64:2440ea72fbecbe9c",
       "inputs": {
         "lean:range.RangeRefusal": "fnv1a64:c15b7cd3ed450d71",
         "lean:range.admit": "fnv1a64:074bddc930b5303a",
         "mutant:past-end-accepted": "fnv1a64:81b738d1eaf1412d",
         "mutant:reversed-accepted": "fnv1a64:013894910adfa39c",
-        "proof:Proofs/PlyruneKernel.lean": "fnv1a64:285044d2a6e5c9db",
+        "proof:Proofs/PlyruneKernel.lean": "fnv1a64:966e5d55c1a962a4",
         "toolchain": "fnv1a64:bb9e124c5c1e30bd"
       },
       "mutant_results": [
@@ -51,5 +101,5 @@
       ]
     }
   ],
-  "commit": "d95276a259a8486a821e9cdeaa77461b00f79ff5"
+  "commit": "5cf92c147139c84acde045393ccb6553e625e4dc"
 }
