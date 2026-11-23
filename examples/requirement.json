@@ -1,0 +1,24 @@
+{
+  "status": "illustrative-contract-fixture-not-a-wire-schema",
+  "id": "requirement:literal-migration-v1",
+  "admittedBeforeCandidate": true,
+  "scope": {
+    "prefix": "config/",
+    "recursive": true,
+    "resourceKind": "regular",
+    "encoding": "utf-8"
+  },
+  "predicate": {
+    "kind": "nonempty-literal",
+    "value": "legacy_endpoint",
+    "normalization": "none",
+    "matches": "left-to-right-non-overlapping"
+  },
+  "disposition": {
+    "kind": "replace-every-occurrence",
+    "replacement": "service_endpoint",
+    "extraEdits": "forbidden"
+  },
+  "exclusions": [],
+  "postconditions": []
+}

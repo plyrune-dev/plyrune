@@ -1,0 +1,31 @@
+{
+  "status": "illustrative-contract-fixture-not-a-wire-schema",
+  "snapshot": "fixture:literal-migration-v1",
+  "resources": [
+    {
+      "path": "config/server/api.env",
+      "mode": "regular",
+      "text": "API_URL=legacy_endpoint\nFALLBACK=legacy_endpoint\n"
+    },
+    {
+      "path": "config/client/app.env",
+      "mode": "regular",
+      "text": "PRIMARY=legacy_endpoint\nSECONDARY=legacy_endpoint\n"
+    },
+    {
+      "path": "config/jobs/worker.env",
+      "mode": "regular",
+      "text": "UPSTREAM=legacy_endpoint\nBACKUP=legacy_endpoint\n"
+    },
+    {
+      "path": "config/unchanged.env",
+      "mode": "regular",
+      "text": "API_URL=modern_endpoint\n"
+    },
+    {
+      "path": "docs/notes.txt",
+      "mode": "regular",
+      "text": "The old setting was called legacy_endpoint.\n"
+    }
+  ]
+}

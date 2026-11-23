@@ -1,0 +1,39 @@
+{
+  "status": "illustrative-expected-fixture-not-product-output",
+  "requiredOccurrenceCount": 6,
+  "domainResourceCount": 4,
+  "zeroMatchResources": [
+    "config/unchanged.env"
+  ],
+  "unchangedResources": [
+    "config/unchanged.env",
+    "docs/notes.txt"
+  ],
+  "resources": [
+    {
+      "path": "config/server/api.env",
+      "mode": "regular",
+      "text": "API_URL=service_endpoint\nFALLBACK=service_endpoint\n"
+    },
+    {
+      "path": "config/client/app.env",
+      "mode": "regular",
+      "text": "PRIMARY=service_endpoint\nSECONDARY=service_endpoint\n"
+    },
+    {
+      "path": "config/jobs/worker.env",
+      "mode": "regular",
+      "text": "UPSTREAM=service_endpoint\nBACKUP=service_endpoint\n"
+    },
+    {
+      "path": "config/unchanged.env",
+      "mode": "regular",
+      "text": "API_URL=modern_endpoint\n"
+    },
+    {
+      "path": "docs/notes.txt",
+      "mode": "regular",
+      "text": "The old setting was called legacy_endpoint.\n"
+    }
+  ]
+}
