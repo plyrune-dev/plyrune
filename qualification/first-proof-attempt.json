@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "generated_by": "cargo tauten proofs",
+  "claims": [
+    {
+      "crate": "plyrune-kernel",
+      "file": "crates/plyrune-kernel/src/range.rs",
+      "function": "admit",
+      "lean": "plyrune_kernel.range.admit",
+      "theorems": [
+        "Proofs.Range.admit_spec"
+      ],
+      "total": "Proofs.Range.admit_spec",
+      "subsumes": [],
+      "mutants": [
+        "past-end-accepted",
+        "reversed-accepted"
+      ],
+      "outcome": "build-failed",
+      "badge": "not-established",
+      "detail": "stage build: fail",
+      "fingerprint": "fnv1a64:30928128ecfe2a8a",
+      "inputs": {
+        "lean:range.RangeRefusal": "fnv1a64:c15b7cd3ed450d71",
+        "lean:range.admit": "fnv1a64:074bddc930b5303a",
+        "mutant:past-end-accepted": "fnv1a64:81b738d1eaf1412d",
+        "mutant:reversed-accepted": "fnv1a64:013894910adfa39c",
+        "proof:Proofs/PlyruneKernel.lean": "fnv1a64:285044d2a6e5c9db",
+        "toolchain": "fnv1a64:bb9e124c5c1e30bd"
+      }
+    }
+  ],
+  "commit": "df8d5b7f3a3674c99d332470af2ec950a678ac34"
+}

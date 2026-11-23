@@ -7,6 +7,8 @@ git archive -o "$work/tree.tar" "$sha"
 tar -xf "$work/tree.tar" -C "$work"
 cd "$work"
 echo "Plyrune fast gate: $sha"
+sha256sum -c scripts/profile.sha256
+python3 tools/native_reference.py
 cargo +1.98.0 fmt --all -- --check
 cargo +1.98.0 build --locked --workspace
 cargo +1.98.0 tauten check --format json

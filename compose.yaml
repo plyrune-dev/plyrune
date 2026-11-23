@@ -70,12 +70,10 @@ services:
     entrypoint: ["sh", "/work/plyrune/docker/entry.sh", "cargo", "+1.98.0", "tauten"]
 
   proofs:
-    <<: [*writable, *tools]
-    environment:
-      CARGO_BUILD_JOBS: ${PLYRUNE_JOBS:-8}
-      PLYRUNE_GATE_ROOT: ${PLYRUNE_GATE_ROOT:-0}
-      PLYRUNE_PROOFS_LOCAL: "1"
-    entrypoint: ["sh", "/work/plyrune/docker/entry.sh", "cargo", "+1.98.0", "tauten", "proofs"]
+    <<: *tools
+    # Lake updates image-owned dependency metadata. Use a disposable clone;
+    # the source mount is read-only. Stdout is exclusively the result file.
+    entrypoint: ["sh", "/work/plyrune/scripts/proofs"]
 
   dev:
     <<: [*writable, *tools]
