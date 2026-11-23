@@ -12,3 +12,12 @@ theorem admit_spec (len lo hi : Std.Usize) :
     simp [range.admit, a, b, WP.spec_ok] <;> scalar_tac
 
 end Proofs.Range
+
+namespace Proofs.Binding
+
+theorem same_store_spec (a b : binding.StoreBinding) :
+    binding.same_store a b ⦃ r => (r = true ↔
+      a.owner = b.owner ∧ a.incarnation = b.incarnation) ⦄ := by
+  by_cases h : a.owner = b.owner <;> simp [binding.same_store, h, WP.spec_ok]
+
+end Proofs.Binding

@@ -20,6 +20,41 @@ set_option maxRecDepth 2048
 
 namespace plyrune_kernel
 
+/-- [plyrune_kernel::binding::OwnerId]
+    Source: 'crates/plyrune-kernel/src/binding.rs', lines 4:0-4:24
+    Visibility: public -/
+@[reducible]
+def binding.OwnerId := Std.U64
+
+/-- [plyrune_kernel::binding::IncarnationId]
+    Source: 'crates/plyrune-kernel/src/binding.rs', lines 7:0-7:30
+    Visibility: public -/
+@[reducible]
+def binding.IncarnationId := Std.U64
+
+/-- [plyrune_kernel::binding::StoreBinding]
+    Source: 'crates/plyrune-kernel/src/binding.rs', lines 10:0-13:1
+    Visibility: public -/
+structure binding.StoreBinding where
+  owner : binding.OwnerId
+  incarnation : binding.IncarnationId
+
+/-- [plyrune_kernel::binding::same_store]:
+    Source: 'crates/plyrune-kernel/src/binding.rs', lines 39:0-41:1
+    Visibility: public -/
+def binding.same_store
+  (expected : binding.StoreBinding) (presented : binding.StoreBinding) :
+  Result Bool
+  := do
+  let i := expected.owner
+  let i1 := presented.owner
+  if i = i1
+  then
+    let i2 := expected.incarnation
+    let i3 := presented.incarnation
+    ok (i2 = i3)
+  else ok false
+
 /-- [plyrune_kernel::range::RangeRefusal]
     Source: 'crates/plyrune-kernel/src/range.rs', lines 21:0-27:1
     Visibility: public -/

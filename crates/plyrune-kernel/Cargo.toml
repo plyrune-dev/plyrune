@@ -17,7 +17,7 @@ layer = "kernel"
 [dependencies]
 
 [package.metadata.charon]
-start_from = ["plyrune_kernel::range::admit_text"]
+start_from = ["plyrune_kernel::range::admit_text", "plyrune_kernel::binding::same_store"]
 
 [lints.rust]
 unsafe_code = "forbid"

@@ -24,4 +24,5 @@
 //! its module.
 #![no_std]
 
+pub mod binding;
 pub mod range;

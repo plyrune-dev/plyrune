@@ -4,6 +4,29 @@
 # audit-failed, mutant-survived or tool-missing.
 version = 1
 
+[[claim]]
+crate = "plyrune-kernel"
+file = "crates/plyrune-kernel/src/binding.rs"
+function = "same_store"
+lean = "plyrune_kernel.binding.same_store"
+theorems = ["Proofs.Binding.same_store_spec"]
+total = "Proofs.Binding.same_store_spec"
+mutants = ["ignore-owner", "ignore-incarnation"]
+
+[[mutant]]
+name = "ignore-owner"
+file = "crates/plyrune-kernel/src/binding.rs"
+before = "expected.owner.0 == presented.owner.0 && "
+after = ""
+direct = ["Proofs.Binding.same_store_spec"]
+
+[[mutant]]
+name = "ignore-incarnation"
+file = "crates/plyrune-kernel/src/binding.rs"
+before = " && expected.incarnation.0 == presented.incarnation.0"
+after = ""
+direct = ["Proofs.Binding.same_store_spec"]
+
 [gate]
 # Run from the workspace root. proofs/run.sh checks for Docker and the
 # pinned image, then runs proofs/gate.py in it.
