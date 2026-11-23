@@ -63,3 +63,10 @@ establish report binding, acquisition correctness or complete migration.
   Cargo dependency is therefore not yet a qualified extraction route.
   Keep the splice kernel independent, retain its native gate, and qualify
   the narrow identity-to-cut mapping separately. Do not rewrite splice.
+* Splicery's **independent native proof gate passed** at `632a90f` in the
+  pinned Tauten image. It regenerated the translation, compared it against
+  the upstream committed copy, built Lean, audited axioms, and rejected all
+  23 calibrated mutants (750 seconds reported by the gate). To repeat the
+  same container command and inputs, run
+  `sh qualification/splice-probe/native-proof.sh`. This qualifies the
+  upstream leaf at that revision; it does not prove the Plyrune bridge.
