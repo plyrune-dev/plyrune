@@ -1,0 +1,14 @@
+name: Docker workspace check
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  gate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - run: docker compose build tools
+      - run: docker compose run --rm gate

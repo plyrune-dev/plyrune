@@ -1,0 +1,4 @@
+# Build output (the Docker gate keeps it in a named volume; a host build puts it here)
+/target
+# Lean build output of the proofs project (proofs/.lake/, regenerated in the proofs image)
+/proofs/.lake/

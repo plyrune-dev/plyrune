@@ -1,0 +1,42 @@
+# Proof claims (tauten proof tier; `cargo tauten init --proofs` generated
+# this file). `cargo tauten proofs` runs the gate below and records one
+# outcome per claim in proofs/claims.json: proved, drift, build-failed,
+# audit-failed, mutant-survived or tool-missing.
+version = 1
+
+[gate]
+# Run from the workspace root. proofs/run.sh checks for Docker and the
+# pinned image, then runs proofs/gate.py in it.
+command = ["sh", "proofs/in-container.sh"]
+# Only translate (`cargo tauten proofs extract [--crate <dir>]`): the
+# authoritative check that kernel code stays inside what the toolchain
+# translates, without building the proofs.
+extract = ["sh", "proofs/in-container.sh", "--extract-only"]
+# The developer loop (`cargo tauten proofs try --theorems T… | --mutants M…`):
+# every stage, but only the named mutants, in parallel; never recorded.
+try = ["sh", "proofs/in-container.sh", "--only-mutants"]
+# Crate directories the gate translates with Charon/Aeneas.
+crates = ["crates/plyrune-kernel"]
+
+[[claim]]
+crate = "plyrune-kernel"
+file = "crates/plyrune-kernel/src/range.rs"
+function = "admit"
+lean = "plyrune_kernel.range.admit"
+theorems = ["Proofs.Range.admit_spec"]
+total = "Proofs.Range.admit_spec"
+mutants = ["past-end-accepted", "reversed-accepted"]
+
+[[mutant]]
+name = "past-end-accepted"
+file = "crates/plyrune-kernel/src/range.rs"
+before = "start > end || end > len"
+after = "start > end || (end > len && start > end)"
+direct = ["Proofs.Range.admit_spec"]
+
+[[mutant]]
+name = "reversed-accepted"
+file = "crates/plyrune-kernel/src/range.rs"
+before = "start > end || end > len"
+after = "end > len"
+direct = ["Proofs.Range.admit_spec"]

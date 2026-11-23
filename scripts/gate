@@ -1,0 +1,14 @@
+#!/bin/sh
+set -eu
+sha=$(git rev-parse HEAD)
+work=$(mktemp -d)
+trap 'rm -rf "$work"' EXIT
+git archive -o "$work/tree.tar" "$sha"
+tar -xf "$work/tree.tar" -C "$work"
+cd "$work"
+echo "Plyrune fast gate: $sha"
+cargo +1.98.0 fmt --all -- --check
+cargo +1.98.0 build --locked --workspace
+cargo +1.98.0 tauten check --format json
+cargo +1.98.0 test --locked --workspace
+cargo +1.98.0 test --release --locked -p plyrune-kernel -p plyrune-core

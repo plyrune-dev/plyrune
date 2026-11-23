@@ -1,0 +1,23 @@
+[package]
+name = "plyrune-kernel"
+description = "Plyrune's pure decision kernel: range admission, literal selection, coverage and report binding, as total functions over plain data."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[package.metadata.tauten]
+tier = "kernel"
+layer = "kernel"
+
+# No dependencies by construction, so TAU-T003 needs no allowlist: the proof
+# gate translates this crate on its own, and anything it depended on would be
+# trusted rather than translated.
+[dependencies]
+
+[package.metadata.charon]
+start_from = ["plyrune_kernel::range::admit_text"]
+
+[lints.rust]
+unsafe_code = "forbid"

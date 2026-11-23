@@ -1,0 +1,19 @@
+[package]
+name = "plyrune-cli"
+description = "The edge: stdio and CLI, manifest acquisition, bounded file reads, output and process lifecycle."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[[bin]]
+name = "plyrune"
+path = "src/main.rs"
+
+[package.metadata.tauten]
+tier = "edge"
+layer = "edge"
+
+[dependencies]
+plyrune-core.workspace = true

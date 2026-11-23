@@ -1,0 +1,92 @@
+name: plyrune
+
+# Everything that gates a commit runs here, in one image (docker/Dockerfile):
+# the pinned public proofs toolchain image with the pinned Rust toolchain and
+# cargo-tauten added. One image, so that nothing nests Docker: the Rust gate,
+# the tauten check and the Lean proof gate each run as a container beside the
+# others, from the checkout, with build output and caches in named volumes.
+# The arrangement follows tauten's own compose.yaml at bac9fdd (MIT).
+#
+#   docker compose build tools
+#   docker compose run --rm gate            # fmt, build, tauten check, tests, docs
+#   docker compose run --rm tauten check    # any cargo-tauten subcommand
+#   docker compose run --rm proofs          # the Lean proof gate; records proofs/claims.json
+#   docker compose run --rm dev             # shell with a writable checkout
+#
+# A commit is admitted only when both `gate` and `proofs` pass on it.
+
+x-tools: &tools
+  image: plyrune-tools:local
+  pull_policy: never
+  init: true
+  # Run as the owner of the mounted checkout, not as root (docker/entry.sh);
+  # PLYRUNE_GATE_ROOT=1 opts into root.
+  entrypoint: ["sh", "/work/plyrune/docker/entry.sh"]
+  cpus: ${PLYRUNE_CPUS:-8}
+  mem_limit: ${PLYRUNE_MEMORY:-8g}
+  pids_limit: 1024
+  environment:
+    CARGO_BUILD_JOBS: ${PLYRUNE_JOBS:-8}
+    PLYRUNE_GATE_ROOT: ${PLYRUNE_GATE_ROOT:-0}
+  volumes:
+    - type: bind
+      source: .
+      target: /work/plyrune
+      read_only: true
+    - cargo-target:/cache/target
+    - cargo-registry:/opt/cargo/registry
+    - cargo-git:/opt/cargo/git
+
+# The checkout is writable: the proof gate records proofs/claims.json.
+# PLYRUNE_PROOFS_LOCAL=1 tells proofs/run.sh that this image already carries the
+# proofs toolchain, so it runs the gate here instead of through Docker.
+x-writable: &writable
+  volumes:
+    - type: bind
+      source: .
+      target: /work/plyrune
+    - cargo-target:/cache/target
+    - cargo-registry:/opt/cargo/registry
+    - cargo-git:/opt/cargo/git
+
+services:
+  tools:
+    build:
+      context: docker
+      dockerfile: Dockerfile
+    image: plyrune-tools:local
+    profiles: [build]
+
+  gate:
+    <<: *tools
+    environment:
+      CARGO_BUILD_JOBS: ${PLYRUNE_JOBS:-8}
+      PLYRUNE_GATE_SNAPSHOT: "1"
+      PLYRUNE_GATE_ROOT: ${PLYRUNE_GATE_ROOT:-0}
+    command: ["scripts/gate"]
+
+  tauten:
+    <<: *tools
+    entrypoint: ["sh", "/work/plyrune/docker/entry.sh", "cargo", "+1.98.0", "tauten"]
+
+  proofs:
+    <<: [*writable, *tools]
+    environment:
+      CARGO_BUILD_JOBS: ${PLYRUNE_JOBS:-8}
+      PLYRUNE_GATE_ROOT: ${PLYRUNE_GATE_ROOT:-0}
+      PLYRUNE_PROOFS_LOCAL: "1"
+    entrypoint: ["sh", "/work/plyrune/docker/entry.sh", "cargo", "+1.98.0", "tauten", "proofs"]
+
+  dev:
+    <<: [*writable, *tools]
+    profiles: [dev]
+    environment:
+      CARGO_BUILD_JOBS: ${PLYRUNE_JOBS:-8}
+      PLYRUNE_GATE_ROOT: ${PLYRUNE_GATE_ROOT:-0}
+      PLYRUNE_PROOFS_LOCAL: "1"
+    command: ["bash"]
+
+volumes:
+  cargo-target:
+  cargo-registry:
+  cargo-git:

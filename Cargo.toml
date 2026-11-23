@@ -1,0 +1,34 @@
+# Plyrune: one harness-agnostic interface from source to checked change.
+#
+# Three crates, dependencies pointing inward: plyrune-cli (edge) -> plyrune-core
+# (core) -> plyrune-kernel (kernel). The tauten profile enforces the direction
+# (TAU-T002) and the declared layer order (TAU-T004); every gate runs in Docker
+# (compose.yaml, docs/ADOPTION.md).
+[workspace]
+resolver = "3"
+members = [
+    "crates/plyrune-kernel",
+    "crates/plyrune-core",
+    "crates/plyrune-cli",
+]
+
+[workspace.package]
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.98"
+repository = "https://github.com/plyrune-dev/plyrune"
+publish = false
+
+[workspace.dependencies]
+plyrune-kernel = { path = "crates/plyrune-kernel" }
+plyrune-core = { path = "crates/plyrune-core" }
+
+# TAU-T004: a crate may depend only on a member of the same or an earlier layer.
+[workspace.metadata.tauten]
+layers = ["kernel", "core", "edge"]
+
+# TAU-H001: release builds check integer overflow. Defence in depth (decided in
+# docs/TAUTEN.md): public operations still return typed errors for admitted
+# bounds failures rather than relying on a panic.
+[profile.release]
+overflow-checks = true
