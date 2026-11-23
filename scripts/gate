@@ -9,6 +9,7 @@ cd "$work"
 echo "Plyrune fast gate: $sha"
 sha256sum -c scripts/profile.sha256
 python3 tools/native_reference.py
+python3 qualification/fixture-vectors.py
 cargo +1.98.0 fmt --all -- --check
 cargo +1.98.0 build --locked --workspace
 cargo +1.98.0 tauten check --format json
