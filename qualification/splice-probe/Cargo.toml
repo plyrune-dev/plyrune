@@ -1,0 +1,17 @@
+[package]
+name = "plyrune-splice-probe"
+version = "0.0.0"
+edition = "2024"
+publish = false
+
+[package.metadata.tauten]
+tier = "edge"
+
+# A consumer experiment; this is not a dependency of the product kernel.
+[workspace]
+
+[dependencies]
+splicery-splice = { git = "https://github.com/writfold-dev/splicery", rev = "632a90fd96e920fbac7ee5818f989739c1617062" }
+
+[profile.release]
+overflow-checks = true

@@ -12,3 +12,5 @@ jobs:
           persist-credentials: false
       - run: docker compose build tools
       - run: docker compose run --rm gate
+      - name: Full Lean gate on the same checkout
+        run: docker compose run --rm -T proofs > "$RUNNER_TEMP/claims.json"

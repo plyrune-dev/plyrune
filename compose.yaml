@@ -10,7 +10,7 @@ name: plyrune
 #   docker compose build tools
 #   docker compose run --rm gate            # fmt, build, tauten check, tests, docs
 #   docker compose run --rm tauten check    # any cargo-tauten subcommand
-#   docker compose run --rm proofs          # the Lean proof gate; records proofs/claims.json
+#   docker compose run --rm -T proofs       # the Lean proof gate; prints its record
 #   docker compose run --rm dev             # shell with a writable checkout
 #
 # A commit is admitted only when both `gate` and `proofs` pass on it.

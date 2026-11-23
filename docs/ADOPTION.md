@@ -37,3 +37,28 @@ optional features, and no lint exceptions or legacy baseline.
 `docs/ASSURANCE.md` lists the proposed obligations. Range bounds are only
 one premise of PR-C01. Neither the fast gate nor inherited leaf proofs
 establish report binding, acquisition correctness or complete migration.
+
+## Executed spikes
+
+* `docker compose run --rm gate` passed at `c163c30`. The pinned CLI's
+  `tauten init --write` generated `AGENTS.tauten.md`; the gate verifies
+  its digest via `scripts/profile.sha256`. The production kernel declares
+  no external dependencies or feature switches.
+* `docker compose run --rm -T proofs` on `d95276a` proved
+  `Proofs.Range.admit_spec`; both `reversed-accepted` and `past-end-accepted`
+  broke that theorem directly. The committed record is `proofs/claims.json`.
+  An earlier run completed translation but failed because Lake could not
+  access image-owned files. Its outcome is retained in
+  `qualification/first-proof-attempt.json`. The proof service now clones
+  the read-only source into the container. The check concerns half-open
+  bounds only; the UTF-8 controls are runtime tests.
+* The [consumer probe](../qualification/splice-probe/) built with
+  `--release --locked`, passed Tauten, and produced all five expected
+  fixture resources using the pinned upstream `prepare`/`render`. This
+  demonstrates dependency use in Rust, not proof composition.
+* `docker compose run --rm dev sh qualification/splice-probe/extract.sh`
+  **failed** before translation: Splicery inherits workspace lints, but
+  Tauten's shadow workspace copies only inherited package keys. A valid
+  Cargo dependency is therefore not yet a qualified extraction route.
+  Keep the splice kernel independent, retain its native gate, and qualify
+  the narrow identity-to-cut mapping separately. Do not rewrite splice.
