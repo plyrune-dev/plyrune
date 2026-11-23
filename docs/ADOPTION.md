@@ -7,8 +7,9 @@ are installed inside the image alongside the development Tauten revision
 in `source-pins.json`. The parent digest and install commands are in
 `docker/Dockerfile`. The 8 CPU / 8 GiB / 1024 process defaults are in
 `compose.yaml`; CI limits the job to 40 minutes. No host Cargo is required.
-The three workspace members have no external runtime dependencies, no
-optional features, and no lint exceptions or legacy baseline.
+The pure kernel has no dependencies. Core hashes with `sha2`; the edge
+decodes untrusted JSON with `serde` (derive) and `serde_json`. `Cargo.lock`
+pins their closure. There are no lint exceptions or legacy baseline.
 
 ## What would make the proposal give a wrong answer?
 

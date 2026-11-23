@@ -13,3 +13,4 @@ layer = "core"
 
 [dependencies]
 plyrune-kernel.workspace = true
+sha2 = "=0.11.0"

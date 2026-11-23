@@ -8,6 +8,6 @@
 //! clock or standard streams, which the tauten profile forbids here
 //! (TAU-A001, TAU-O001).
 //!
-//! No operation is exposed yet. The kernel's first decisions are being proved
-//! (`proofs/claims.json`) before any of them is exposed through this crate, as
-//! `AGENTS.md` requires.
+//! The fixture adapter validates explicit bytes only.
+
+pub mod fixture;

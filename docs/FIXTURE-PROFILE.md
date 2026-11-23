@@ -36,6 +36,8 @@ requirement in separate operations.
   contains the old literal. A two-member view must retain all six captures.
 
 The [probe](../qualification/splice-probe/) exercises the last byte comparison.
-This profile is not a released schema. Path admission, aggregate budget
-enforcement, digest framing and independent requirement/report admission
-remain obligations for the product implementation.
+`plyrune snapshot` implements input path/mode/encoding admission, inventory
+and byte limits, and digest framing; the transport adds a 1 MiB JSON limit.
+Canonicalization is tested against independent vectors, not proved. Match
+and candidate limits, requirement/report admission, and a stable wire
+schema remain obligations for the product implementation.

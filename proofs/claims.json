@@ -18,7 +18,7 @@
       ],
       "outcome": "proved",
       "badge": "proved",
-      "fingerprint": "fnv1a64:2440ea72fbecbe9c",
+      "fingerprint": "fnv1a64:cd6eda27647c2cca",
       "inputs": {
         "lean:binding.IncarnationId": "fnv1a64:a6a275ffb90951c4",
         "lean:binding.OwnerId": "fnv1a64:d24063bf5fe6730a",
@@ -26,7 +26,7 @@
         "lean:binding.same_store": "fnv1a64:a2ef229ee3180126",
         "mutant:ignore-incarnation": "fnv1a64:21fb720083b87f9e",
         "mutant:ignore-owner": "fnv1a64:cce4f5ebc3201e84",
-        "proof:Proofs/PlyruneKernel.lean": "fnv1a64:966e5d55c1a962a4",
+        "proof:Proofs/PlyruneKernel.lean": "fnv1a64:125edc133985b751",
         "toolchain": "fnv1a64:bb9e124c5c1e30bd"
       },
       "mutant_results": [
@@ -68,13 +68,13 @@
       ],
       "outcome": "proved",
       "badge": "proved",
-      "fingerprint": "fnv1a64:2440ea72fbecbe9c",
+      "fingerprint": "fnv1a64:cd6eda27647c2cca",
       "inputs": {
         "lean:range.RangeRefusal": "fnv1a64:c15b7cd3ed450d71",
         "lean:range.admit": "fnv1a64:074bddc930b5303a",
         "mutant:past-end-accepted": "fnv1a64:81b738d1eaf1412d",
         "mutant:reversed-accepted": "fnv1a64:013894910adfa39c",
-        "proof:Proofs/PlyruneKernel.lean": "fnv1a64:966e5d55c1a962a4",
+        "proof:Proofs/PlyruneKernel.lean": "fnv1a64:125edc133985b751",
         "toolchain": "fnv1a64:bb9e124c5c1e30bd"
       },
       "mutant_results": [
@@ -82,24 +82,111 @@
           "mutant": "past-end-accepted",
           "status": "killed",
           "broken": [
-            "Proofs.Range.admit_spec"
+            "Proofs.Range.admit_spec",
+            "Proofs.Text.admit_text_spec"
           ],
           "direct": [
             "Proofs.Range.admit_spec"
+          ],
+          "dependent": [
+            "Proofs.Text.admit_text_spec"
           ]
         },
         {
           "mutant": "reversed-accepted",
           "status": "killed",
           "broken": [
-            "Proofs.Range.admit_spec"
+            "Proofs.Range.admit_spec",
+            "Proofs.Text.admit_text_spec"
           ],
           "direct": [
             "Proofs.Range.admit_spec"
+          ],
+          "dependent": [
+            "Proofs.Text.admit_text_spec"
+          ]
+        }
+      ]
+    },
+    {
+      "crate": "plyrune-kernel",
+      "file": "crates/plyrune-kernel/src/range.rs",
+      "function": "char_boundary",
+      "lean": "plyrune_kernel.range.char_boundary",
+      "theorems": [
+        "Proofs.Text.boundary_spec"
+      ],
+      "total": "Proofs.Text.boundary_spec",
+      "subsumes": [],
+      "mutants": [
+        "accept-continuation"
+      ],
+      "outcome": "proved",
+      "badge": "proved",
+      "fingerprint": "fnv1a64:cd6eda27647c2cca",
+      "inputs": {
+        "lean:range.char_boundary": "fnv1a64:9b28bdac2000b248",
+        "lean:range.is_continuation": "fnv1a64:ae9403ad37b664a8",
+        "mutant:accept-continuation": "fnv1a64:cd1b49e1bd9dfdbf",
+        "proof:Proofs/PlyruneKernel.lean": "fnv1a64:125edc133985b751",
+        "toolchain": "fnv1a64:bb9e124c5c1e30bd"
+      },
+      "mutant_results": [
+        {
+          "mutant": "accept-continuation",
+          "status": "killed",
+          "broken": [
+            "Proofs.Text.admit_text_spec",
+            "Proofs.Text.boundary_spec"
+          ],
+          "direct": [
+            "Proofs.Text.boundary_spec"
+          ],
+          "dependent": [
+            "Proofs.Text.admit_text_spec"
+          ]
+        }
+      ]
+    },
+    {
+      "crate": "plyrune-kernel",
+      "file": "crates/plyrune-kernel/src/range.rs",
+      "function": "admit_text",
+      "lean": "plyrune_kernel.range.admit_text",
+      "theorems": [
+        "Proofs.Text.admit_text_spec"
+      ],
+      "total": "Proofs.Text.admit_text_spec",
+      "subsumes": [],
+      "mutants": [
+        "ignore-end-boundary"
+      ],
+      "outcome": "proved",
+      "badge": "proved",
+      "fingerprint": "fnv1a64:cd6eda27647c2cca",
+      "inputs": {
+        "lean:range.RangeRefusal": "fnv1a64:c15b7cd3ed450d71",
+        "lean:range.admit": "fnv1a64:074bddc930b5303a",
+        "lean:range.admit_text": "fnv1a64:d51b2cd7793d9fae",
+        "lean:range.char_boundary": "fnv1a64:9b28bdac2000b248",
+        "lean:range.is_continuation": "fnv1a64:ae9403ad37b664a8",
+        "mutant:ignore-end-boundary": "fnv1a64:639fb69d1e7e57e7",
+        "proof:Proofs/PlyruneKernel.lean": "fnv1a64:125edc133985b751",
+        "toolchain": "fnv1a64:bb9e124c5c1e30bd"
+      },
+      "mutant_results": [
+        {
+          "mutant": "ignore-end-boundary",
+          "status": "killed",
+          "broken": [
+            "Proofs.Text.admit_text_spec"
+          ],
+          "direct": [
+            "Proofs.Text.admit_text_spec"
           ]
         }
       ]
     }
   ],
-  "commit": "5cf92c147139c84acde045393ccb6553e625e4dc"
+  "commit": "5c7fc80fe0f806186e482ede0b567b9e49849694"
 }

@@ -28,5 +28,16 @@ docker compose run --rm dev sh -ec 'cd qualification/splice-probe &&
 ```
 
 This developer probe prepares candidate bytes in memory and compares the
-entire manifest to the checked-in expected result. The `plyrune` executable
-does not yet serve edit requests.
+entire manifest to the checked-in expected result.
+
+### Try the first Plyrune command
+
+```sh
+docker compose run --rm -T dev cargo +1.98.0 run --quiet --locked -p plyrune-cli -- snapshot < examples/input.json
+```
+
+`snapshot` validates the fixture on stdin and returns its resource count
+and canonical content digest. The example has five resources and digest
+`6ba5a5e50f91714f5a6d96a5ad3a07e525f375f95b6a2b86b2594673319b9d5c`.
+It rejects malformed or oversized inputs with exit status 2. This first
+command does not retain handles or serve edit requests.
