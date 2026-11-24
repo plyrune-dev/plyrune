@@ -103,6 +103,6 @@ theorem inspect_spec (a b : snapshot.SnapshotKey) (xs : Slice Std.U8) (lo hi : S
       else core.result.Result.Err range.RangeRefusal.WrongSnapshot ⦄ := by
   by_cases h : a.high = b.high <;> by_cases l : a.low = b.low <;>
     simp [snapshot.inspect_range, h, l, WP.spec_ok] <;>
-    exact Proofs.Text.admit_text_spec xs lo hi
+    simpa using Proofs.Text.admit_text_spec xs lo hi
 
 end Proofs.Snapshot
