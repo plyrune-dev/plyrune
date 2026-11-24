@@ -1,0 +1,10 @@
+{
+  "name": "plyrune-website-tools",
+  "private": true,
+  "description": "Pinned headless-browser tooling for Plyrune website screenshots and checks. Development-only; never deployed.",
+  "type": "module",
+  "dependencies": {
+    "axe-core": "4.14.1",
+    "playwright-core": "1.65.1"
+  }
+}
