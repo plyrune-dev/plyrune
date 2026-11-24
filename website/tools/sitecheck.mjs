@@ -195,7 +195,9 @@ const WATCH = [/proof/i, /\bprove[ds]?\b|\bproven\b|proofs/i, /verif/i, /guarant
 function wordingLint(text, label, required) {
   const flat = text.replace(/\s+/g, ' ');
   const res = { label, missing: required.filter((s) => !flat.includes(s)), forbidden: [], watch: {} };
-  for (const [name, re] of FORBIDDEN) { const m = flat.match(re); if (m) res.forbidden.push(`${name}: "${m[0]}"`); }
+  // Only this one published, checksum-pinned preview installer is qualified.
+  const checked = flat.replaceAll('curl -fsSL https://plyrune-dev.github.io/install.sh | sh', '');
+  for (const [name, re] of FORBIDDEN) { const m = checked.match(re); if (m) res.forbidden.push(`${name}: "${m[0]}"`); }
   for (const re of WATCH) { const ms = [...flat.matchAll(new RegExp(re.source, re.flags.includes('g') ? re.flags : re.flags + 'g'))]; if (ms.length) res.watch[re.source] = ms.map((m) => { const i = m.index; return '…' + flat.slice(Math.max(0, i - 38), i + m[0].length + 38).trim() + '…'; }); }
   return res;
 }

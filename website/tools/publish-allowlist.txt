@@ -3,6 +3,7 @@
 # variants) stays in the private repository. stage.sh copies ONLY the paths listed here.
 index.html
 changelog.html
+install.sh
 404.html
 styles.css
 measurements.json
