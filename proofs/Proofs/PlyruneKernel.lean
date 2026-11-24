@@ -67,3 +67,26 @@ theorem admit_text_spec (xs : Slice Std.U8) (lo hi : Std.Usize) :
     simp [WP.spec_ok]
 
 end Proofs.Text
+
+namespace Proofs.Capture
+
+/-- A foreign store is refused even for valid coordinates; within the
+same store both kinds of range refusal and nonempty success are preserved. -/
+theorem store_range_spec (a b : binding.StoreBinding) (xs : Slice Std.U8) (lo hi : Std.Usize) :
+    capture.admit_store_range a b xs lo hi ⦃ r => r =
+      if a.owner = b.owner ∧ a.incarnation = b.incarnation then
+        if lo ≤ hi ∧ hi ≤ Slice.len xs then
+          if Proofs.Text.boundary xs lo && Proofs.Text.boundary xs hi then core.result.Result.Ok ()
+          else core.result.Result.Err range.RangeRefusal.NotCharBoundary
+        else core.result.Result.Err range.RangeRefusal.OutOfBounds
+      else core.result.Result.Err range.RangeRefusal.WrongStore ⦄ := by
+  unfold capture.admit_store_range
+  apply WP.spec_bind (Proofs.Binding.same_store_spec a b)
+  intro v hv
+  cases v with
+  | false => simp_all [WP.spec_ok]
+  | true =>
+    simp_all only [true_iff, if_true]
+    exact Proofs.Text.admit_text_spec xs lo hi
+
+end Proofs.Capture

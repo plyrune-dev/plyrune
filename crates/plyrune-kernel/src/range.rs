@@ -24,6 +24,8 @@ pub enum RangeRefusal {
     /// Under the text profile, an end that does not fall on a character
     /// boundary of the image.
     NotCharBoundary,
+    /// The store-bound caller presented a different owner or incarnation.
+    WrongStore,
 }
 
 /// Whether `byte` continues the UTF-8 character before it (`10xxxxxx`).

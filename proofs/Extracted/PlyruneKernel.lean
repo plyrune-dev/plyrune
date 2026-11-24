@@ -56,37 +56,16 @@ def binding.same_store
   else ok false
 
 /-- [plyrune_kernel::range::RangeRefusal]
-    Source: 'crates/plyrune-kernel/src/range.rs', lines 21:0-27:1
+    Source: 'crates/plyrune-kernel/src/range.rs', lines 21:0-29:1
     Visibility: public -/
 @[discriminant isize]
 inductive range.RangeRefusal where
 | OutOfBounds : range.RangeRefusal
 | NotCharBoundary : range.RangeRefusal
-
-/-- [plyrune_kernel::range::is_continuation]:
-    Source: 'crates/plyrune-kernel/src/range.rs', lines 31:0-33:1
-    Visibility: public -/
-def range.is_continuation (byte : Std.U8) : Result Bool := do
-  if byte >= 128#u8
-  then ok (byte <= 191#u8)
-  else ok false
-
-/-- [plyrune_kernel::range::char_boundary]:
-    Source: 'crates/plyrune-kernel/src/range.rs', lines 41:0-46:1
-    Visibility: public -/
-def range.char_boundary
-  (bytes : Slice Std.U8) («at» : Std.Usize) : Result Bool := do
-  let o ←
-    core.slice.Slice.get (core.slice.index.SliceIndexUsizeSlice Std.U8) bytes
-      «at»
-  match o with
-  | none => let i := Slice.len bytes
-            ok («at» = i)
-  | some byte => let b ← range.is_continuation byte
-                 ok (¬ b)
+| WrongStore : range.RangeRefusal
 
 /-- [plyrune_kernel::range::admit]:
-    Source: 'crates/plyrune-kernel/src/range.rs', lines 56:0-62:1
+    Source: 'crates/plyrune-kernel/src/range.rs', lines 58:0-64:1
     Visibility: public -/
 def range.admit
   (len : Std.Usize) (start : Std.Usize) («end» : Std.Usize) :
@@ -99,8 +78,30 @@ def range.admit
     then ok (core.result.Result.Err range.RangeRefusal.OutOfBounds)
     else ok (core.result.Result.Ok ())
 
+/-- [plyrune_kernel::range::is_continuation]:
+    Source: 'crates/plyrune-kernel/src/range.rs', lines 33:0-35:1
+    Visibility: public -/
+def range.is_continuation (byte : Std.U8) : Result Bool := do
+  if byte >= 128#u8
+  then ok (byte <= 191#u8)
+  else ok false
+
+/-- [plyrune_kernel::range::char_boundary]:
+    Source: 'crates/plyrune-kernel/src/range.rs', lines 43:0-48:1
+    Visibility: public -/
+def range.char_boundary
+  (bytes : Slice Std.U8) («at» : Std.Usize) : Result Bool := do
+  let o ←
+    core.slice.Slice.get (core.slice.index.SliceIndexUsizeSlice Std.U8) bytes
+      «at»
+  match o with
+  | none => let i := Slice.len bytes
+            ok («at» = i)
+  | some byte => let b ← range.is_continuation byte
+                 ok (¬ b)
+
 /-- [plyrune_kernel::range::admit_text]:
-    Source: 'crates/plyrune-kernel/src/range.rs', lines 72:0-82:1
+    Source: 'crates/plyrune-kernel/src/range.rs', lines 74:0-84:1
     Visibility: public -/
 def range.admit_text
   (bytes : Slice Std.U8) (start : Std.Usize) («end» : Std.Usize) :
@@ -119,5 +120,18 @@ def range.admit_text
       else ok (core.result.Result.Err range.RangeRefusal.NotCharBoundary)
     else ok (core.result.Result.Err range.RangeRefusal.NotCharBoundary)
   | core.result.Result.Err _ => ok r
+
+/-- [plyrune_kernel::capture::admit_store_range]:
+    Source: 'crates/plyrune-kernel/src/capture.rs', lines 12:0-24:1
+    Visibility: public -/
+def capture.admit_store_range
+  (expected : binding.StoreBinding) (presented : binding.StoreBinding)
+  (bytes : Slice Std.U8) (start : Std.Usize) («end» : Std.Usize) :
+  Result (core.result.Result Unit range.RangeRefusal)
+  := do
+  let b ← binding.same_store expected presented
+  if b
+  then range.admit_text bytes start «end»
+  else ok (core.result.Result.Err range.RangeRefusal.WrongStore)
 
 end plyrune_kernel
