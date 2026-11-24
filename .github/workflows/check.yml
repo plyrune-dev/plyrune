@@ -2,6 +2,10 @@ name: Docker workspace check
 on: [push, pull_request]
 permissions:
   contents: read
+env:
+  PLYRUNE_CPUS: "2"
+  PLYRUNE_JOBS: "2"
+  PLYRUNE_MEMORY: 6g
 jobs:
   gate:
     runs-on: ubuntu-24.04
