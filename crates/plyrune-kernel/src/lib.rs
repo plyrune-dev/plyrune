@@ -27,3 +27,4 @@
 pub mod binding;
 pub mod capture;
 pub mod range;
+pub mod snapshot;

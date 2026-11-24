@@ -111,3 +111,26 @@ file = "crates/plyrune-kernel/src/capture.rs"
 before = "same_store(expected, presented)"
 after = "same_store(expected, expected)"
 direct = ["Proofs.Capture.store_range_spec"]
+
+[[claim]]
+crate = "plyrune-kernel"
+file = "crates/plyrune-kernel/src/snapshot.rs"
+function = "inspect_range"
+lean = "plyrune_kernel.snapshot.inspect_range"
+theorems = ["Proofs.Snapshot.inspect_spec"]
+total = "Proofs.Snapshot.inspect_spec"
+mutants = ["omit-high-half", "omit-low-half"]
+
+[[mutant]]
+name = "omit-high-half"
+file = "crates/plyrune-kernel/src/snapshot.rs"
+before = "expected.high == actual.high && "
+after = ""
+direct = ["Proofs.Snapshot.inspect_spec"]
+
+[[mutant]]
+name = "omit-low-half"
+file = "crates/plyrune-kernel/src/snapshot.rs"
+before = " && expected.low == actual.low"
+after = ""
+direct = ["Proofs.Snapshot.inspect_spec"]

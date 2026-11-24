@@ -56,16 +56,17 @@ def binding.same_store
   else ok false
 
 /-- [plyrune_kernel::range::RangeRefusal]
-    Source: 'crates/plyrune-kernel/src/range.rs', lines 21:0-29:1
+    Source: 'crates/plyrune-kernel/src/range.rs', lines 21:0-31:1
     Visibility: public -/
 @[discriminant isize]
 inductive range.RangeRefusal where
 | OutOfBounds : range.RangeRefusal
 | NotCharBoundary : range.RangeRefusal
 | WrongStore : range.RangeRefusal
+| WrongSnapshot : range.RangeRefusal
 
 /-- [plyrune_kernel::range::admit]:
-    Source: 'crates/plyrune-kernel/src/range.rs', lines 58:0-64:1
+    Source: 'crates/plyrune-kernel/src/range.rs', lines 60:0-66:1
     Visibility: public -/
 def range.admit
   (len : Std.Usize) (start : Std.Usize) («end» : Std.Usize) :
@@ -79,7 +80,7 @@ def range.admit
     else ok (core.result.Result.Ok ())
 
 /-- [plyrune_kernel::range::is_continuation]:
-    Source: 'crates/plyrune-kernel/src/range.rs', lines 33:0-35:1
+    Source: 'crates/plyrune-kernel/src/range.rs', lines 35:0-37:1
     Visibility: public -/
 def range.is_continuation (byte : Std.U8) : Result Bool := do
   if byte >= 128#u8
@@ -87,7 +88,7 @@ def range.is_continuation (byte : Std.U8) : Result Bool := do
   else ok false
 
 /-- [plyrune_kernel::range::char_boundary]:
-    Source: 'crates/plyrune-kernel/src/range.rs', lines 43:0-48:1
+    Source: 'crates/plyrune-kernel/src/range.rs', lines 45:0-50:1
     Visibility: public -/
 def range.char_boundary
   (bytes : Slice Std.U8) («at» : Std.Usize) : Result Bool := do
@@ -101,7 +102,7 @@ def range.char_boundary
                  ok (¬ b)
 
 /-- [plyrune_kernel::range::admit_text]:
-    Source: 'crates/plyrune-kernel/src/range.rs', lines 74:0-84:1
+    Source: 'crates/plyrune-kernel/src/range.rs', lines 76:0-86:1
     Visibility: public -/
 def range.admit_text
   (bytes : Slice Std.U8) (start : Std.Usize) («end» : Std.Usize) :
@@ -133,5 +134,27 @@ def capture.admit_store_range
   if b
   then range.admit_text bytes start «end»
   else ok (core.result.Result.Err range.RangeRefusal.WrongStore)
+
+/-- [plyrune_kernel::snapshot::SnapshotKey]
+    Source: 'crates/plyrune-kernel/src/snapshot.rs', lines 5:0-8:1
+    Visibility: public -/
+structure snapshot.SnapshotKey where
+  high : Std.U128
+  low : Std.U128
+
+/-- [plyrune_kernel::snapshot::inspect_range]:
+    Source: 'crates/plyrune-kernel/src/snapshot.rs', lines 22:0-34:1
+    Visibility: public -/
+def snapshot.inspect_range
+  (expected : snapshot.SnapshotKey) (actual : snapshot.SnapshotKey)
+  (bytes : Slice Std.U8) (start : Std.Usize) («end» : Std.Usize) :
+  Result (core.result.Result Unit range.RangeRefusal)
+  := do
+  if expected.high = actual.high
+  then
+    if expected.low = actual.low
+    then range.admit_text bytes start «end»
+    else ok (core.result.Result.Err range.RangeRefusal.WrongSnapshot)
+  else ok (core.result.Result.Err range.RangeRefusal.WrongSnapshot)
 
 end plyrune_kernel

@@ -90,3 +90,19 @@ theorem store_range_spec (a b : binding.StoreBinding) (xs : Slice Std.U8) (lo hi
     exact Proofs.Text.admit_text_spec xs lo hi
 
 end Proofs.Capture
+
+namespace Proofs.Snapshot
+
+theorem inspect_spec (a b : snapshot.SnapshotKey) (xs : Slice Std.U8) (lo hi : Std.Usize) :
+    snapshot.inspect_range a b xs lo hi ⦃ r => r =
+      if a.high = b.high ∧ a.low = b.low then
+        if lo ≤ hi ∧ hi ≤ Slice.len xs then
+          if Proofs.Text.boundary xs lo && Proofs.Text.boundary xs hi then core.result.Result.Ok ()
+          else core.result.Result.Err range.RangeRefusal.NotCharBoundary
+        else core.result.Result.Err range.RangeRefusal.OutOfBounds
+      else core.result.Result.Err range.RangeRefusal.WrongSnapshot ⦄ := by
+  by_cases h : a.high = b.high <;> by_cases l : a.low = b.low <;>
+    simp [snapshot.inspect_range, h, l, WP.spec_ok] <;>
+    exact Proofs.Text.admit_text_spec xs lo hi
+
+end Proofs.Snapshot
