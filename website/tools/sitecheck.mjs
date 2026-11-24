@@ -38,6 +38,8 @@ const EXTRA = FULL ? [
 ] : [{ name: 'w320', width: 320, height: 640, mobile: true }];
 const THEMES = ['light', 'dark'];
 const WCAG_TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
+let servers = {}, modes = [], wording = [], weights = { files: {} }, summaryWritten = false;
+const report = { runs: [], summary: {} };
 
 // ---- Fonts. The site uses a system font stack. The container's default (WenQuanYi Zen Hei) is not
 // representative, so tests run with documented stand-in fonts. Nothing here ships with the site.
@@ -106,8 +108,10 @@ const LAYOUT_PROBE = () => {
   const sig = (el) => { let s = el.tagName.toLowerCase(); if (el.id) s += '#' + el.id; if (typeof el.className === 'string' && el.className.trim()) s += '.' + el.className.trim().split(/\s+/).slice(0, 3).join('.'); const t = (el.getAttribute('aria-label') || el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 36); return s + (t ? ` "${t}"` : ''); };
   const inScroller = (el) => { let p = el.parentElement; while (p && p !== document.body) { const s = getComputedStyle(p); if (/(auto|scroll|hidden)/.test(s.overflowX) && p.scrollWidth > p.clientWidth + 1) return true; p = p.parentElement; } return false; };
   const rects = [];
+  // Chromium keeps layout boxes for content hidden by a closed <details>; it is not rendered.
+  const concealed = (el) => !!(el.closest && el.closest('details:not([open])') && !el.closest('summary'));
   for (const el of document.querySelectorAll('body *')) {
-    if (el.namespaceURI !== 'http://www.w3.org/1999/xhtml') continue;
+    if (el.namespaceURI !== 'http://www.w3.org/1999/xhtml' || concealed(el)) continue;
     const cs = getComputedStyle(el);
     if (cs.display === 'none' || cs.visibility === 'hidden') continue;
     const r = el.getBoundingClientRect();
@@ -126,7 +130,7 @@ const LAYOUT_PROBE = () => {
     const val = node.nodeValue;
     if (!val || !val.trim()) continue;
     const p = node.parentElement;
-    if (!p || /^(script|style|noscript|template|title)$/i.test(p.tagName)) continue;
+    if (!p || concealed(p) || /^(script|style|noscript|template|title)$/i.test(p.tagName)) continue;
     const cs = getComputedStyle(p);
     if (cs.display === 'none' || cs.visibility === 'hidden') continue;
     const range = document.createRange();
@@ -142,8 +146,7 @@ const LAYOUT_PROBE = () => {
     if (w > 2 && h > 2 && h > 0.22 * Math.min(a.h, b.h) && w > 0.22 * Math.min(a.w, b.w)) { out.textOverlaps.push(`${a.s} <> ${b.s} (${Math.round(w)}x${Math.round(h)})`); if (out.textOverlaps.length > 40) return out; }
   }
   for (const el of document.querySelectorAll('a[href],button,summary,input,select,textarea,[tabindex]:not([tabindex="-1"])')) {
-    const closed = el.closest('details:not([open])');
-    if (closed && !el.closest('summary')) continue;
+    if (concealed(el)) continue;
     const r = el.getBoundingClientRect();
     const cs = getComputedStyle(el);
     if (cs.display === 'none' || cs.visibility === 'hidden') continue;
@@ -171,7 +174,10 @@ const REF_PROBE = () => {
   for (const a of document.querySelectorAll('[style]')) add('style-attr', a.getAttribute('style'));
   for (const s of document.querySelectorAll('style')) { for (const m of (s.textContent || '').matchAll(/url\(\s*['"]?([^'")]+)['"]?\s*\)/g)) add('inline-css-url', m[1]); for (const m of (s.textContent || '').matchAll(/@import\s+['"]([^'"]+)['"]/g)) add('css-import', m[1]); }
   const html = document.documentElement.outerHTML;
-  for (const m of html.matchAll(/(?:https?:)?\/\/[^\s"'<>)@\\]+/g)) add('absolute-url-in-html', m[0]);
+  // Real URL references live in attribute values (never xmlns) and in inline script/style text.
+  const URL_RE = /(?:https?:)?\/\/[^\s"'<>)\\]+/g;
+  for (const el of document.querySelectorAll('*')) for (const at of el.attributes) { if (/^xmlns(:|$)/i.test(at.name)) continue; for (const m of at.value.matchAll(URL_RE)) add('absolute-url-in-attribute', m[0]); }
+  for (const s of document.querySelectorAll('script,style')) for (const m of (s.textContent || '').matchAll(URL_RE)) add('absolute-url-in-inline-' + s.tagName.toLowerCase(), m[0]);
   return { refs: out, meta: { inlineScripts: document.querySelectorAll('script:not([src])').length, externalScripts: [...document.querySelectorAll('script[src]')].map((s) => s.getAttribute('src')), inlineStyles: document.querySelectorAll('style').length, inlineEventHandlers: [...document.querySelectorAll('*')].filter((el) => [...el.attributes].some((a) => /^on/i.test(a.name))).length, metaRefresh: !!document.querySelector('meta[http-equiv="refresh" i]'), embeds: document.querySelectorAll('iframe,frame,object,embed').length, imgsWithoutAlt: document.querySelectorAll('img:not([alt])').length, images: document.querySelectorAll('img').length, svgsWithoutName: [...document.querySelectorAll('svg')].filter((s) => s.closest('[aria-hidden="true"]') || s.closest('button,a,[role=img]') ? false : !(s.getAttribute('aria-label') || s.getAttribute('aria-labelledby') || s.querySelector('title'))).length, docTitle: document.title, lang: document.documentElement.lang, metaDescription: (document.querySelector('meta[name="description" i]') || {}).content || null, viewportMeta: (document.querySelector('meta[name="viewport" i]') || {}).content || null, faviconLinks: [...document.querySelectorAll('link[rel*="icon" i]')].map((l) => l.getAttribute('href')), ids: [...document.querySelectorAll('[id]')].map((e) => e.id), text: (document.body.innerText || document.body.textContent || '') } };
 };
 
@@ -224,12 +230,16 @@ async function runAxe(page, runOnly) {
   }, runOnly);
 }
 
+// Wait until the window scroll position has stopped changing (focus/hover trigger smooth scrolling).
+const settleScroll = (page) => page.evaluate(() => new Promise((resolve) => { let last = window.scrollY, stable = 0; const t0 = performance.now(); const tick = () => { const y = window.scrollY; if (y === last) stable += 1; else { stable = 0; last = y; } if (stable >= 6 || performance.now() - t0 > 2000) resolve(); else requestAnimationFrame(tick); }; requestAnimationFrame(tick); }));
+
 async function focusPass(page) {
   const sel = 'a[href],button,summary,input,select,textarea,[tabindex]:not([tabindex="-1"])';
   const n = await page.evaluate((s) => document.querySelectorAll(s).length, sel);
   const seen = [];
   for (let i = 0; i < n + 1; i++) {
     await page.keyboard.press('Tab');
+    await settleScroll(page);
     const info = await page.evaluate(() => {
       const el = document.activeElement;
       if (!el || el === document.body || el === document.documentElement) return null;
@@ -257,9 +267,10 @@ async function hoverPass(page) {
   for (let i = 0; i < n; i++) {
     const loc = page.locator(sel).nth(i);
     if (!(await loc.count())) continue;
-    const label = await loc.evaluate((el) => { const r = el.getBoundingClientRect(); return { name: `${el.tagName.toLowerCase()}:${el.getAttribute('href') || ''} "${(el.innerText || el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 40)}"`, visible: r.width > 0 && r.height > 0 }; });
+    const label = await loc.evaluate((el) => { const r = el.getBoundingClientRect(); return { name: `${el.tagName.toLowerCase()}:${el.getAttribute('href') || ''} "${(el.innerText || el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 40)}"`, visible: r.width > 0 && r.height > 0, offscreen: r.bottom <= 0 || r.top >= innerHeight }; });
     if (!label.visible) { rows.push({ name: label.name, skipped: 'not visible (closed disclosure or hidden)' }); continue; }
-    try { await loc.scrollIntoViewIfNeeded(); await loc.hover({ timeout: 3000 }); } catch (e) { rows.push({ name: label.name, error: 'hover failed: ' + String(e.message).split('\n')[0].slice(0, 100) }); continue; }
+    if (label.offscreen) { rows.push({ name: label.name, skipped: 'kept off-screen until focused (skip link)' }); continue; }
+    try { await loc.scrollIntoViewIfNeeded(); await settleScroll(page); await loc.hover({ timeout: 3000 }); } catch (e) { rows.push({ name: label.name, error: 'hover failed: ' + String(e.message).split('\n')[0].slice(0, 100) }); continue; }
     const style = await loc.evaluate((el) => { const cs = getComputedStyle(el); return { color: cs.color, bg: cs.backgroundColor, deco: cs.textDecorationLine, thickness: cs.textDecorationThickness, outline: cs.outlineStyle }; });
     let contrast = null;
     if (RUN_AXE) { const a = await runAxe(page, { type: 'rule', values: ['color-contrast'] }); contrast = a.violations.flatMap((v) => v.nodes.map((nd) => `${nd.target}: ${nd.any.join(' | ')}`)); }
@@ -299,18 +310,13 @@ async function toggleTest(page) {
 async function disclosureTest(page) {
   const s = page.locator('summary').first();
   if (!(await s.count())) return { skipped: 'no disclosure' };
-  const countHidden = () => page.evaluate(() => [...document.querySelectorAll('details')].reduce((n, d) => n + d.querySelectorAll('li, tr, .capture, dd').length, 0));
-  const visible = () => page.evaluate(() => [...document.querySelectorAll('details > *:not(summary)')].reduce((n, el) => n + (el.getBoundingClientRect().height > 0 ? 1 : 0), 0));
-  const v0 = await visible();
-  await s.click();
-  const open1 = await page.evaluate(() => document.querySelectorAll('details[open]').length);
-  const v1 = await visible();
-  await s.focus();
-  await page.keyboard.press('Enter');
-  const open2 = await page.evaluate(() => document.querySelectorAll('details[open]').length);
-  await page.keyboard.press('Space');
-  const open3 = await page.evaluate(() => document.querySelectorAll('details[open]').length);
-  return { hiddenBlocksBefore: v0, visibleBlocksAfterClick: v1, openAfterClick: open1, openAfterEnter: open2, openAfterSpace: open3, disclosureBlocks: await countHidden() };
+  const open = () => page.evaluate(() => document.querySelectorAll('details[open]').length);
+  const summaryText = (await s.innerText()).trim();
+  const o0 = await open();
+  await s.click(); await settleScroll(page); const o1 = await open();
+  await s.focus(); await page.keyboard.press('Enter'); const o2 = await open();
+  await page.keyboard.press('Space'); const o3 = await open();
+  return { summaryText, openCount: [o0, o1, o2, o3], togglesByClick: o1 !== o0, togglesByEnter: o2 !== o1, togglesBySpace: o3 !== o2 };
 }
 
 async function main() {
@@ -318,11 +324,11 @@ async function main() {
   if (FONTCONF) fs.writeFileSync(path.join(opt.out, `${opt.prefix}-fonts.conf`), FONTCONF);
   const root = path.resolve(opt.root);
   const pages = String(opt.pages).split(',');
-  const modes = opt.url ? ['live'] : String(opt.modes).split(',');
+  modes = opt.url ? ['live'] : String(opt.modes).split(',');
   const browsers = String(opt.browsers).split(',');
   const pairs = String(opt.pairs || '').split(',').filter(Boolean).map((p) => p.split('/'));
-  const report = { generatedAt: new Date().toISOString(), root, pages, modes, browsers, fontProfile: opt.font, fontNote: (FONT_SETS[opt.font] || {}).note || 'container defaults', node: process.version, runs: [], summary: {} };
-  const wording = [], weights = { files: {} };
+  Object.assign(report, { generatedAt: new Date().toISOString(), root, pages, modes, browsers, fontProfile: opt.font, fontNote: (FONT_SETS[opt.font] || {}).note || 'container defaults', node: process.version });
+  wording = []; weights = { files: {} };
 
   const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name)]);
   const TEXT = /\.(html|css|js|mjs|svg|json|txt|webmanifest)$/i;
@@ -344,7 +350,7 @@ async function main() {
     for (const m of html.matchAll(/<link[^>]+rel=["']?stylesheet["']?[^>]*>/gi)) { const h = (m[0].match(/href=["']([^"']+)["']/) || [])[1]; if (h && !/^(https?:)?\/\//.test(h)) { const fp = path.resolve(path.dirname(htmlPath), h.split('?')[0]); if (fs.existsSync(fp)) { const css = fs.readFileSync(fp, 'utf8'); for (const u of css.matchAll(/url\(\s*['"]?([^'")]+)['"]?\s*\)/g)) report.cssUrls = (report.cssUrls || []).concat([[pageName, 'css-url', u[1]]]); for (const u of css.matchAll(/@import\s+['"]([^'"]+)['"]/g)) report.cssUrls = (report.cssUrls || []).concat([[pageName, 'css-import', u[1]]]); } } }
   }
 
-  const servers = {};
+  servers = {};
   for (const m of modes) { if (m === 'root') servers.root = await startServer(root, ''); else if (m === 'subpath') servers.subpath = await startServer(root, '/plyrune/'); }
   const originOf = (mode) => mode === 'root' ? `http://127.0.0.1:${servers.root.port}` : mode === 'subpath' ? `http://127.0.0.1:${servers.subpath.port}` : mode === 'live' ? new URL(String(opt.url)).origin : 'file://' + root;
   const baseFor = (mode, pageName) => mode === 'file' ? 'file://' + path.join(root, pageName) : mode === 'root' ? `http://127.0.0.1:${servers.root.port}/${pageName}` : mode === 'subpath' ? `http://127.0.0.1:${servers.subpath.port}/plyrune/${pageName}` : String(opt.url).replace(/\/$/, '') + '/' + (pageName === 'index.html' ? '' : pageName);
@@ -352,7 +358,10 @@ async function main() {
   for (const bName of browsers) {
     const type = { chromium, firefox, webkit }[bName];
     let browser;
-    try { browser = await type.launch(); } catch (e) { report.summary[`launch ${bName}`] = 'FAILED: ' + String(e.message).split('\n')[0].slice(0, 200); continue; }
+    try {
+      // A browser that never finishes launching is reported as a failure instead of blocking the run.
+      browser = await Promise.race([type.launch(), new Promise((_, rej) => setTimeout(() => rej(new Error('launch did not complete within 90 s')), 90000))]);
+    } catch (e) { report.summary[`launch ${bName}`] = 'FAILED: ' + String(e.message).split('\n')[0].slice(0, 200); continue; }
     report[bName + 'Version'] = browser.version();
     for (const mode of modes) for (const pageName of pages) {
       const htmlPath = path.join(root, pageName);
@@ -366,6 +375,7 @@ async function main() {
         const page = await ctx.newPage();
         const rec = { browser: bName, mode, page: pageName, viewport: `${vp.name} ${vp.width}x${vp.height}`, theme, url: baseFor(mode, pageName), console: [], pageErrors: [], failedRequests: [], badResponses: [], requests: [] };
         const t0 = Date.now();
+        console.error(`[${bName} ${mode} ${pageName} ${rec.viewport} ${theme}] start`);
         page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') rec.console.push(`${m.type()}: ${m.text().slice(0, 200)}`); });
         page.on('pageerror', (e) => rec.pageErrors.push(String(e.message).slice(0, 200)));
         page.on('requestfailed', (r) => rec.failedRequests.push(`${r.url()} ${r.failure()?.errorText}`));
@@ -377,17 +387,24 @@ async function main() {
           rec.status = resp ? resp.status() : null;
           if (resp && mode === 'live') rec.docHeaders = Object.fromEntries(Object.entries(await resp.allHeaders()).filter(([k]) => /content-type|content-security|cache-control|content-encoding|content-length|^server$|strict-transport|x-content-type|referrer-policy|permissions-policy/.test(k)));
           await page.evaluate(() => document.fonts.ready);
-          if (RUN_AXE) await page.addScriptTag({ path: AXE }); // injected from a local file; never fetched by the page
-          if (typeof opt.toggle === 'string' && theme === 'dark') await page.locator(opt.toggle).first().click();
           await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
-          rec.layout = await page.evaluate(LAYOUT_PROBE);
-          if (rec.layout.effectiveTheme !== theme) rec.themeMismatch = `asked ${theme}, body background ${rec.layout.bodyBg} luminance ${rec.layout.bodyBgLuminance}`;
-          rec.externalRequests = rec.requests.filter((u) => !u.startsWith(originOf(mode)));
+          // Everything below "load" is measured before any test tooling is injected into the page.
+          rec.load = { requests: [...rec.requests], console: [...rec.console], failedRequests: [...rec.failedRequests], badResponses: [...rec.badResponses], pageErrors: [...rec.pageErrors] };
           if (bName === 'chromium' && named) {
             const probe = await page.evaluate(REF_PROBE);
             rec.meta = probe.meta; rec.textLength = probe.meta.text.length; delete probe.meta.text; rec.ids = probe.meta.ids;
             rec.refs = classifyRefs(probe.refs, { root, pageDir: mode === 'file' ? path.dirname(htmlPath) : null });
             if (pairs.length && mode === 'file') rec.tokens = await page.evaluate(TOKEN_PROBE, pairs);
+          }
+          if (RUN_AXE) {
+            await page.addScriptTag({ path: AXE }); // injected from a local file; never fetched by the page
+            if (!report.axeCatalog) report.axeCatalog = await page.evaluate(() => axe.getRules().map((r) => ({ id: r.ruleId, enabled: r.enabled, tags: r.tags })));
+          }
+          if (typeof opt.toggle === 'string' && theme === 'dark') await page.locator(opt.toggle).first().click();
+          rec.layout = await page.evaluate(LAYOUT_PROBE);
+          if (rec.layout.effectiveTheme !== theme) rec.themeMismatch = `asked ${theme}, body background ${rec.layout.bodyBg} luminance ${rec.layout.bodyBgLuminance}`;
+          rec.externalRequests = rec.load.requests.filter((u) => !u.startsWith(originOf(mode)));
+          if (bName === 'chromium' && named) {
             rec.focus = await focusPass(page);
             rec.hover = await hoverPass(page);
             rec.textSpacing = await textSpacing(page);
@@ -397,9 +414,10 @@ async function main() {
             if (named || bName !== 'chromium') rec.axeBestPractice = await runAxe(page, { type: 'tag', values: ['best-practice'] });
           }
           if (SHOTS && bName === 'chromium' && named && mode === (opt.shotMode || 'file')) {
+            const stem = pageName === 'index.html' ? '' : pageName.replace(/\.html?$/, '') + '-';
             await page.evaluate(() => window.scrollTo(0, 0));
-            await page.screenshot({ path: path.join(opt.out, `${opt.prefix}-${vp.name}-${vp.width}x${vp.height}-${theme}-viewport.png`), animations: 'disabled' });
-            await page.screenshot({ path: path.join(opt.out, `${opt.prefix}-${vp.name}-${vp.width}x${vp.height}-${theme}-full.png`), fullPage: true, animations: 'disabled' });
+            await page.screenshot({ path: path.join(opt.out, `${opt.prefix}-${stem}${vp.name}-${vp.width}x${vp.height}-${theme}-viewport.png`), animations: 'disabled' });
+            await page.screenshot({ path: path.join(opt.out, `${opt.prefix}-${stem}${vp.name}-${vp.width}x${vp.height}-${theme}-full.png`), fullPage: true, animations: 'disabled' });
           }
         } catch (e) { rec.error = String(e.message).split('\n')[0].slice(0, 300); }
         rec.ms = Date.now() - t0;
@@ -410,6 +428,7 @@ async function main() {
     }
     // no-JS rendering + JS interactions + reduced motion + forced colours (Chromium, first mode)
     const mode = modes[0];
+    try {
     for (const pageName of pages) {
       if (!fs.existsSync(path.join(root, pageName))) continue;
       const url = baseFor(mode, pageName);
@@ -447,9 +466,22 @@ async function main() {
         report.forcedColors = report.forcedColors || [];
         report.forcedColors.push({ page: pageName, ...fc });
         await ctx.close();
+
+        // Print stylesheet, forced together with a dark colour scheme: print must come out light.
+        const ctxp = await browser.newContext({ viewport: { width: 816, height: 1056 } });
+        const pagep = await ctxp.newPage();
+        await pagep.goto(url, { waitUntil: 'load' });
+        await pagep.emulateMedia({ media: 'print', colorScheme: 'dark' });
+        const pr = await pagep.evaluate(LAYOUT_PROBE);
+        const pv = await pagep.evaluate(() => { const d = (sel) => { const el = document.querySelector(sel); return el ? getComputedStyle(el).display : 'absent'; }; return { skip: d('.skip'), nav: d('.site-nav'), toggle: d('.theme-toggle'), actions: d('.actions'), toggleHiddenAttr: document.querySelector('[data-theme-toggle]') ? document.querySelector('[data-theme-toggle]').hidden : null }; });
+        if (SHOTS && mode === (opt.shotMode || 'file')) await pagep.screenshot({ path: path.join(opt.out, `${opt.prefix}-${pageName.replace('.html', '')}-print-a4-top.png`) });
+        report.print = report.print || [];
+        report.print.push({ page: pageName, media: 'print', colorScheme: 'dark', bodyBg: pr.bodyBg, fg: pr.fg, scrollW: pr.scrollW, vw: pr.vw, overflowers: pr.overflowers, clipped: pr.clipped, ...pv });
+        await ctxp.close();
       }
     }
-    await browser.close();
+    } catch (e) { report.toolErrors = (report.toolErrors || []).concat(`${bName}: optional stage failed: ${String(e.message).split("\n")[0].slice(0, 160)}`); }
+    await browser.close().catch(() => {});
   }
 
   // live 404 behaviour
@@ -457,17 +489,31 @@ async function main() {
     try { const r = await fetch(String(opt.url).replace(/\/$/, '') + '/__plyrune-404-probe__/no-such-page', { redirect: 'manual' }); const t = await r.text(); report.live404 = { status: r.status, headers: Object.fromEntries([...r.headers].filter(([k]) => /content-type|content-security|cache-control|content-encoding|^server$/.test(k))), bodyStart: t.slice(0, 200).replace(/\s+/g, ' ') }; } catch (e) { report.live404 = { error: String(e.message) }; }
   }
 
+  writeSummary();
+  for (const s of Object.values(servers)) await s.close();
+}
+
+// Written even when a browser or a stage fails, so partial results are never lost.
+function writeSummary() {
+  if (summaryWritten) return;
+  summaryWritten = true;
+  const S = (report.summary = report.summary || {});
+  try {
   // ---- summary (real numbers only; empty lists mean no finding, not "verified by a human")
   const S = report.summary;
   const runs = report.runs;
   const where = (r) => `${r.browser}/${r.mode}/${r.viewport}/${r.theme}`;
   S.runs = runs.length; S.errors = runs.filter((r) => r.error).map((r) => `${where(r)}: ${r.error}`);
   S.pageErrors = runs.filter((r) => r.pageErrors.length).map((r) => `${where(r)}: ${r.pageErrors.join(' | ')}`);
-  S.console = runs.filter((r) => r.console.length).map((r) => `${where(r)}: ${r.console.join(' | ')}`);
-  S.failedRequests = runs.filter((r) => r.failedRequests.length).map((r) => `${where(r)}: ${r.failedRequests.join(' | ')}`);
-  S.badResponses = runs.filter((r) => r.badResponses.length).map((r) => `${where(r)}: ${r.badResponses.join(' | ')}`);
+  const load = (key) => runs.filter((r) => r.load && r.load[key].length).map((r) => `${where(r)}: ${r.load[key].join(' | ')}`);
+  S.loadConsole = load('console'); S.loadFailedRequests = load('failedRequests'); S.loadBadResponses = load('badResponses'); S.loadPageErrors = load('pageErrors');
+  // Recorded after axe-core was injected and screenshots were taken: tooling noise, not the page's own.
+  S.afterToolingConsole = runs.filter((r) => r.console.length).map((r) => `${where(r)}: ${r.console.join(' | ')}`);
+  S.afterToolingFailedRequests = runs.filter((r) => r.failedRequests.length).map((r) => `${where(r)}: ${r.failedRequests.join(' | ')}`);
+  S.afterToolingBadResponses = runs.filter((r) => r.badResponses.length).map((r) => `${where(r)}: ${r.badResponses.join(' | ')}`);
   S.externalRequests = runs.filter((r) => r.externalRequests && r.externalRequests.length).map((r) => `${where(r)}: ${r.externalRequests.join(' | ')}`);
-  S.requestCounts = [...new Set(runs.filter((r) => r.browser === 'chromium').map((r) => `${where(r)}: ${r.requests.length} request(s)`))];
+  S.requestCounts = [...new Set(runs.filter((r) => r.browser === 'chromium').map((r) => `${where(r)}: ${r.load.requests.length} request(s) at load`))];
+  S.loadRequestUrls = runs.filter((r) => r.browser === 'chromium' && r.viewport.startsWith('desktop') && r.theme === 'light').map((r) => `${r.page}: ${r.load.requests.map((u) => u.replace(/^file:\/\/\/site\//, '').slice(0, 100)).join(', ')}`);
   S.themeMismatch = runs.filter((r) => r.themeMismatch).map((r) => `${where(r)}: ${r.themeMismatch}`);
   S.effectiveThemes = [...new Set(runs.map((r) => `${where(r)} -> ${r.layout?.effectiveTheme} (bg ${r.layout?.bodyBg})`))];
   S.horizontalScroll = runs.filter((r) => r.layout && r.layout.scrollW > r.layout.vw).map((r) => `${where(r)}: scrollWidth ${r.layout.scrollW} > ${r.layout.vw}`);
@@ -521,14 +567,18 @@ async function main() {
   S.landmarks = ch ? ch.layout.landmarks : null;
   S.headings = ch ? ch.layout.headings : null;
   S.tokens = runs.filter((r) => r.tokens).map((r) => ({ where: where(r), pairs: r.tokens.map((t) => `${t.fg} on ${t.bg} = ${t.ratio}${t.ratio === null ? '' : t.ratio >= 4.5 ? ' (AA normal text)' : t.ratio >= 3 ? ' (AA large text/UI only)' : ' (FAIL)'}`) }));
-  S.tokenMin = runs.filter((r) => r.tokens).reduce((m, r) => r.tokens.reduce((mm, t) => t.ratio !== null && t.ratio < mm.r ? { r: t.ratio, where: where(r), pair: `${t.fg}/${t.bg}` } : mm, m), { r: Infinity });
+  const tok = runs.filter((r) => r.tokens).flatMap((r) => r.tokens.filter((t) => t.ratio !== null).map((t) => ({ ratio: t.ratio, pair: `${t.fg}/${t.bg}`, where: where(r) })));
+  S.tokenMin = tok.length ? tok.reduce((m, t) => (t.ratio < m.ratio ? t : m)) : null;
+  S.axeCatalog = report.axeCatalog ? { total: report.axeCatalog.length, enabled: report.axeCatalog.filter((r) => r.enabled).length, wcag22: report.axeCatalog.filter((r) => r.tags.some((t) => /^wcag22/.test(t))).map((r) => `${r.id} [${r.tags.filter((t) => /wcag\d/.test(t)).join(',')}]${r.enabled ? '' : ' (disabled by default)'}`) } : null;
   S.jsStates = report.jsStates; S.interactions = report.interactions;
-  S.reducedMotion = report.reducedMotion; S.forcedColors = report.forcedColors;
+  S.reducedMotion = report.reducedMotion; S.forcedColors = report.forcedColors; S.print = report.print || [];
   if (opt.url) { S.liveDocHeaders = runs.find((r) => r.docHeaders && r.page === 'index.html')?.docHeaders; S.liveResponses = runs.find((r) => r.responses)?.responses; S.live404 = report.live404; S.liveStatuses = [...new Set(runs.map((r) => `${where(r)}: HTTP ${r.status}`))]; }
   const srv = servers.subpath || servers.root;
   if (srv) { const gets = srv.log.filter((l) => l.method === 'GET'); S.httpRequests = [...new Set(gets.map((l) => `${l.status} ${l.path} (${l.bytes} B${l.type ? ', ' + l.type.split(';')[0] : ''})`))]; S.httpBytesServed = gets.reduce((s, l) => s + l.bytes, 0); S.httpNot200 = gets.filter((l) => l.status !== 200).map((l) => `${l.status} ${l.path}`); }
   fs.writeFileSync(path.join(opt.out, `${opt.prefix}-report.json`), JSON.stringify(report, null, 1));
+  } catch (e) { S.summaryError = String(e.message).slice(0, 200); }
+  if (report.toolErrors) S.toolErrors = report.toolErrors;
+  try { fs.mkdirSync(opt.out, { recursive: true }); fs.writeFileSync(path.join(opt.out, `${opt.prefix}-report.json`), JSON.stringify(report, null, 1)); } catch (e) { console.error("could not write report", String(e.message)); }
   console.log(JSON.stringify(S, null, 1));
-  for (const s of Object.values(servers)) await s.close();
 }
-main().catch((e) => { console.error('FATAL', e); process.exit(1); });
+main().catch((e) => { console.error("FATAL", String((e && e.message) || e).slice(0, 300)); writeSummary(); process.exit(1); });
