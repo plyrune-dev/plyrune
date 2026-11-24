@@ -185,7 +185,7 @@ const TOKEN_PROBE = (pairs) => {
   const norm = (prop) => { const el = document.createElement('span'); el.style.color = `var(${prop})`; el.style.backgroundColor = 'transparent'; document.body.appendChild(el); const v = getComputedStyle(el).color; el.remove(); return v; };
   const lum = (c) => { const m = c.match(/[\d.]+/g).map(Number); if (m.length < 3 || m[3] === 0) return null; const f = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; }; return 0.2126 * f(m[0]) + 0.7152 * f(m[1]) + 0.0722 * f(m[2]); };
   const defined = (prop) => { for (const el of [document.documentElement, document.body]) { if (getComputedStyle(el).getPropertyValue(prop).trim()) return getComputedStyle(el).getPropertyValue(prop).trim(); } return ''; };
-  return pairs.map(([fg, bg]) => { const a = norm(`--${fg}`), b = norm(`--${bg}`); const la = lum(a), lb = lum(b); const [x, y] = [la, lb].sort((p, q) => q - p); return { fg, bg, fgRaw: defined(`--${fg}`), bgRaw: defined(`--${bg}`), fgComputed: a, bgComputed: b, ratio: la === null || lb === null ? null : Math.round(((x + 0.05) / (y + 0.05)) * 100) / 100 }; });
+  return pairs.map(([fg, bg]) => { const fgRaw = defined(`--${fg}`), bgRaw = defined(`--${bg}`); if (!fgRaw || !bgRaw) return { fg, bg, fgRaw, bgRaw, ratio: null, note: 'token not defined on this page' }; const a = norm(`--${fg}`), b = norm(`--${bg}`); const la = lum(a), lb = lum(b); const [x, y] = [la, lb].sort((p, q) => q - p); return { fg, bg, fgRaw, bgRaw, fgComputed: a, bgComputed: b, ratio: la === null || lb === null ? null : Math.round(((x + 0.05) / (y + 0.05)) * 100) / 100 }; });
 };
 
 const REQUIRED_STRINGS = ['not a running Plyrune engine', 'Not measured yet'];
@@ -566,7 +566,7 @@ function writeSummary() {
   S.pageHeights = Object.fromEntries(runs.filter((r) => r.layout && NAMED.some((n) => r.viewport.startsWith(n.name)) && r.browser === 'chromium' && r.mode === modes[0]).map((r) => [`${r.page} ${r.viewport} ${r.theme}`, r.layout.pageH]));
   S.landmarks = ch ? ch.layout.landmarks : null;
   S.headings = ch ? ch.layout.headings : null;
-  S.tokens = runs.filter((r) => r.tokens).map((r) => ({ where: where(r), pairs: r.tokens.map((t) => `${t.fg} on ${t.bg} = ${t.ratio}${t.ratio === null ? '' : t.ratio >= 4.5 ? ' (AA normal text)' : t.ratio >= 3 ? ' (AA large text/UI only)' : ' (FAIL)'}`) }));
+  S.tokens = runs.filter((r) => r.tokens).map((r) => ({ where: where(r), pairs: r.tokens.filter((t) => t.ratio !== null).map((t) => `${t.fg} on ${t.bg} = ${t.ratio}${t.ratio >= 4.5 ? ' (AA normal text)' : t.ratio >= 3 ? ' (AA large text/UI only)' : ' (FAIL)'}`), notDefined: r.tokens.filter((t) => t.ratio === null).map((t) => `${t.fg}/${t.bg}`) }));
   const tok = runs.filter((r) => r.tokens).flatMap((r) => r.tokens.filter((t) => t.ratio !== null).map((t) => ({ ratio: t.ratio, pair: `${t.fg}/${t.bg}`, where: where(r) })));
   S.tokenMin = tok.length ? tok.reduce((m, t) => (t.ratio < m.ratio ? t : m)) : null;
   S.axeCatalog = report.axeCatalog ? { total: report.axeCatalog.length, enabled: report.axeCatalog.filter((r) => r.enabled).length, wcag22: report.axeCatalog.filter((r) => r.tags.some((t) => /^wcag22/.test(t))).map((r) => `${r.id} [${r.tags.filter((t) => /wcag\d/.test(t)).join(',')}]${r.enabled ? '' : ' (disabled by default)'}`) } : null;
