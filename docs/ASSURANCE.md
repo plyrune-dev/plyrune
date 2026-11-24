@@ -31,6 +31,21 @@ Prove refusal correctness and totality where needed, not only the happy path. No
 
 ## Trusted bridges
 
+### Proof-first sequencing (owner decision, 24 November)
+
+| Claim | Target at the first relevant production boundary | If blocked |
+|---|---|---|
+| C01 | Prove store-bound text admission; then prove full capture binding. Test host ID assignment and acquisition separately. | Keep unresolved capture handles out of the shell. |
+| C02 | Prove single-resource literal matching first; then inventory traversal or a complete-inventory witness checker. | Run differential controls but do not claim complete search. |
+| C03 | Prove Plyrune lowering against the explicit cut/identity relation. Test the external Rust mapping. | Keep Splicery isolated; no qualified bridge claim. |
+| C04 | Retain upstream splice proof; prove manifest composition and test integration with exact prepared order. | Report only the leaf and tested fixture results. |
+| C05 | Prove checker success and refusal relative to the independently admitted requirement. | No production coverage verdict. |
+| C06 | Prove report subject equality; separately test canonical bytes, decoding and replay. | No portable success report. |
+| C07 | Prove negative inventory membership where required for completeness; operator reuse is conditional on measured demand. | Recompute on a new immutable input. |
+| C08 | Document a composition argument listing proved decisions, tested host mappings and assumptions; no monolithic Lean theorem is promised. | Withhold end-to-end claims where a premise is unqualified. |
+
+The failed cross-workspace extraction is not required for independent leaf proofs; it remains a blocker for claims depending on a single joint translation. TLA+ becomes useful if publication introduces concurrent writers or recovery choices, not for deciding equality or byte ranges.
+
 | Bridge/assumption | Initial treatment | What it does not establish |
 |---|---|---|
 | Rust → Charon/Aeneas → Lean | Pinned translation trust base and drift gate | Correctness of unextracted Rust |

@@ -4,6 +4,10 @@ Issues track delivery; RFCs record decisions. Adapted from [Writfold’s RFC flo
 
 | Decision | Tracking issue | Design / implementation |
 |---|---|---|
+| [Portable reports and optional Writfold](2026-11-24-portable-check-reports.md) | [#39](https://github.com/plyrune-dev/plyrune/issues/39) | draft; snapshot adapter smoke only |
+| [Check arbitrary native candidates (full issue RFC)](https://github.com/plyrune-dev/plyrune/issues/30) | #30 | draft; decide before checker entrypoint |
+| [Admission authority (full issue RFC)](https://github.com/plyrune-dev/plyrune/issues/31) | #31 | draft; review with #3 |
+| [Pilot before proofs (full issue RFC)](https://github.com/plyrune-dev/plyrune/issues/29) | #29 | rejected; owner requires proofs first |
 | [Delivery records](2026-11-24-delivery-records.md) | [#28](https://github.com/plyrune-dev/plyrune/issues/28) | accepted / complete |
 | [Independent requirement framing](2026-11-24-requirement-framing.md) | [#3](https://github.com/plyrune-dev/plyrune/issues/3) | draft / not-started |
 | [Import the reviewed candidate-only handover](2026-11-24-candidate-only-handover.md) | [#21](https://github.com/plyrune-dev/plyrune/issues/21) | accepted / complete (backfill) |

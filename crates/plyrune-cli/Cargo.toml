@@ -3,6 +3,7 @@ name = "plyrune-cli"
 description = "The edge: stdio and CLI, manifest acquisition, bounded file reads, output and process lifecycle."
 version.workspace = true
 edition.workspace = true
+license.workspace = true
 rust-version.workspace = true
 repository.workspace = true
 publish.workspace = true

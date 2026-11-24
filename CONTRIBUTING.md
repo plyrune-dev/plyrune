@@ -8,8 +8,4 @@ Start with a [GitHub issue](https://github.com/plyrune-dev/plyrune/issues). Repo
 
 **Delivery:** link the issue in the change. Run the applicable Docker gates in [README.md](README.md), attach the commit, evidence and remaining limits, then close the scoped issue. For a user-visible or assurance change, add a dated note to [the changelog](website/changelog.html) in the same change. Say whether it is available from source, live on Pages, or a tagged release. Publish only the staged allowlist and compare the live page with those bytes. Editorial changes need no product release.
 
-## Queue after the initial build
-
-Finish M0: [native traces #1](https://github.com/plyrune-dev/plyrune/issues/1), [source and adoption closure #2](https://github.com/plyrune-dev/plyrune/issues/2), [requirement framing and adversarial vectors #3](https://github.com/plyrune-dev/plyrune/issues/3). The source inventory and requirement RFC can proceed independently after the baseline.
-
-Then M1: capture binding **#4** → full literal inventory **#5** → bounded view **#6** and retained splice bridge **#7** → independent report **#8**. Pinned Git acquisition **#9** follows the fixture adapter. Stdio sessions and packaging wait for M2; fine-grained reuse and publication are outside this queue.
+Use the [current milestone](https://github.com/plyrune-dev/plyrune/milestone/7) for sequencing. Production semantic decisions must clear the selected proof gate before being exposed through an adapter. Native controls and adapter smoke tests do not discharge kernel claims.

@@ -7,7 +7,7 @@ authors: [OpenCode]
 created: 2026-11-24
 updated: 2026-11-24
 issue: https://github.com/plyrune-dev/plyrune/issues/3
-milestone: M0 · Contracts and baseline
+milestone: Next · Proved subject binding
 supersedes: []
 superseded_by: []
 blocked_on: [owner-review]

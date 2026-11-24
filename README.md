@@ -1,10 +1,10 @@
 # Plyrune
 
+Plyrune is an open-source toolkit for checking an agent’s candidate edits against a requirement fixed before the edit. For example, a migration scoped to all of `config/` should not pass just because every occurrence under `config/server/` was replaced. Today you can identify a fixture with `plyrune snapshot`; the migration checker is still in development.
+
 [Changelog](https://plyrune-dev.github.io/changelog.html) · [Milestones](https://github.com/plyrune-dev/plyrune/milestones) · [Issues and RFC process](CONTRIBUTING.md)
 
-Plyrune is developing a candidate-only editing interface for agents. Start
-with the [handover](START-HERE.md) for the design and [adoption record](docs/ADOPTION.md)
-for implementation evidence and open gaps.
+See the [adoption record](docs/ADOPTION.md) for executed checks, the [proof record](proofs/claims.json) for the precise kernel claims, and the [Writfold gate example](examples/writfold/) for optional integration. Plyrune is [MIT licensed](LICENSE); upstream components retain their own notices.
 
 ## Reproduce the current build
 

@@ -1,0 +1,9 @@
+schema = "writfold-gate/1"
+id = "plyrune-snapshot"
+version = 1
+class = "mechanical"
+argv = ["sh", "examples/writfold/check-snapshot.sh", "{artifacts}"]
+workdir = "."
+timeout_seconds = 30
+scope = ["examples/input.json", "examples/writfold/**", "qualification/fixture-vectors.json"]
+description = "Check the identity of the reference fixture with the configured Plyrune binary"
