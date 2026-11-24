@@ -18,7 +18,7 @@
       ],
       "outcome": "proved",
       "badge": "proved",
-      "fingerprint": "fnv1a64:22d22f061560bc6d",
+      "fingerprint": "fnv1a64:f511414b541f62d9",
       "inputs": {
         "lean:binding.IncarnationId": "fnv1a64:a6a275ffb90951c4",
         "lean:binding.OwnerId": "fnv1a64:d24063bf5fe6730a",
@@ -26,7 +26,7 @@
         "lean:binding.same_store": "fnv1a64:a2ef229ee3180126",
         "mutant:ignore-incarnation": "fnv1a64:21fb720083b87f9e",
         "mutant:ignore-owner": "fnv1a64:cce4f5ebc3201e84",
-        "proof:Proofs/PlyruneKernel.lean": "fnv1a64:343fd988e591d57c",
+        "proof:Proofs/PlyruneKernel.lean": "fnv1a64:07f3b91875087400",
         "toolchain": "fnv1a64:bb9e124c5c1e30bd"
       },
       "mutant_results": [
@@ -76,13 +76,13 @@
       ],
       "outcome": "proved",
       "badge": "proved",
-      "fingerprint": "fnv1a64:22d22f061560bc6d",
+      "fingerprint": "fnv1a64:f511414b541f62d9",
       "inputs": {
-        "lean:range.RangeRefusal": "fnv1a64:7500ab0fe133935f",
+        "lean:range.RangeRefusal": "fnv1a64:1d0bd289ef603991",
         "lean:range.admit": "fnv1a64:074bddc930b5303a",
         "mutant:past-end-accepted": "fnv1a64:81b738d1eaf1412d",
         "mutant:reversed-accepted": "fnv1a64:013894910adfa39c",
-        "proof:Proofs/PlyruneKernel.lean": "fnv1a64:343fd988e591d57c",
+        "proof:Proofs/PlyruneKernel.lean": "fnv1a64:07f3b91875087400",
         "toolchain": "fnv1a64:bb9e124c5c1e30bd"
       },
       "mutant_results": [
@@ -92,6 +92,7 @@
           "broken": [
             "Proofs.Capture.store_range_spec",
             "Proofs.Range.admit_spec",
+            "Proofs.Snapshot.inspect_spec",
             "Proofs.Text.admit_text_spec"
           ],
           "direct": [
@@ -99,6 +100,7 @@
           ],
           "dependent": [
             "Proofs.Capture.store_range_spec",
+            "Proofs.Snapshot.inspect_spec",
             "Proofs.Text.admit_text_spec"
           ]
         },
@@ -108,6 +110,7 @@
           "broken": [
             "Proofs.Capture.store_range_spec",
             "Proofs.Range.admit_spec",
+            "Proofs.Snapshot.inspect_spec",
             "Proofs.Text.admit_text_spec"
           ],
           "direct": [
@@ -115,6 +118,7 @@
           ],
           "dependent": [
             "Proofs.Capture.store_range_spec",
+            "Proofs.Snapshot.inspect_spec",
             "Proofs.Text.admit_text_spec"
           ]
         }
@@ -135,12 +139,12 @@
       ],
       "outcome": "proved",
       "badge": "proved",
-      "fingerprint": "fnv1a64:22d22f061560bc6d",
+      "fingerprint": "fnv1a64:f511414b541f62d9",
       "inputs": {
         "lean:range.char_boundary": "fnv1a64:9b28bdac2000b248",
         "lean:range.is_continuation": "fnv1a64:ae9403ad37b664a8",
         "mutant:accept-continuation": "fnv1a64:cd1b49e1bd9dfdbf",
-        "proof:Proofs/PlyruneKernel.lean": "fnv1a64:343fd988e591d57c",
+        "proof:Proofs/PlyruneKernel.lean": "fnv1a64:07f3b91875087400",
         "toolchain": "fnv1a64:bb9e124c5c1e30bd"
       },
       "mutant_results": [
@@ -149,6 +153,7 @@
           "status": "killed",
           "broken": [
             "Proofs.Capture.store_range_spec",
+            "Proofs.Snapshot.inspect_spec",
             "Proofs.Text.admit_text_spec",
             "Proofs.Text.boundary_spec"
           ],
@@ -157,6 +162,7 @@
           ],
           "dependent": [
             "Proofs.Capture.store_range_spec",
+            "Proofs.Snapshot.inspect_spec",
             "Proofs.Text.admit_text_spec"
           ]
         }
@@ -177,15 +183,15 @@
       ],
       "outcome": "proved",
       "badge": "proved",
-      "fingerprint": "fnv1a64:22d22f061560bc6d",
+      "fingerprint": "fnv1a64:f511414b541f62d9",
       "inputs": {
-        "lean:range.RangeRefusal": "fnv1a64:7500ab0fe133935f",
+        "lean:range.RangeRefusal": "fnv1a64:1d0bd289ef603991",
         "lean:range.admit": "fnv1a64:074bddc930b5303a",
         "lean:range.admit_text": "fnv1a64:d51b2cd7793d9fae",
         "lean:range.char_boundary": "fnv1a64:9b28bdac2000b248",
         "lean:range.is_continuation": "fnv1a64:ae9403ad37b664a8",
         "mutant:ignore-end-boundary": "fnv1a64:639fb69d1e7e57e7",
-        "proof:Proofs/PlyruneKernel.lean": "fnv1a64:343fd988e591d57c",
+        "proof:Proofs/PlyruneKernel.lean": "fnv1a64:07f3b91875087400",
         "toolchain": "fnv1a64:bb9e124c5c1e30bd"
       },
       "mutant_results": [
@@ -194,13 +200,15 @@
           "status": "killed",
           "broken": [
             "Proofs.Capture.store_range_spec",
+            "Proofs.Snapshot.inspect_spec",
             "Proofs.Text.admit_text_spec"
           ],
           "direct": [
             "Proofs.Text.admit_text_spec"
           ],
           "dependent": [
-            "Proofs.Capture.store_range_spec"
+            "Proofs.Capture.store_range_spec",
+            "Proofs.Snapshot.inspect_spec"
           ]
         }
       ]
@@ -220,20 +228,20 @@
       ],
       "outcome": "proved",
       "badge": "proved",
-      "fingerprint": "fnv1a64:22d22f061560bc6d",
+      "fingerprint": "fnv1a64:f511414b541f62d9",
       "inputs": {
         "lean:binding.IncarnationId": "fnv1a64:a6a275ffb90951c4",
         "lean:binding.OwnerId": "fnv1a64:d24063bf5fe6730a",
         "lean:binding.StoreBinding": "fnv1a64:967184e3e43d0d5a",
         "lean:binding.same_store": "fnv1a64:a2ef229ee3180126",
         "lean:capture.admit_store_range": "fnv1a64:8d65c92a6b9bc373",
-        "lean:range.RangeRefusal": "fnv1a64:7500ab0fe133935f",
+        "lean:range.RangeRefusal": "fnv1a64:1d0bd289ef603991",
         "lean:range.admit": "fnv1a64:074bddc930b5303a",
         "lean:range.admit_text": "fnv1a64:d51b2cd7793d9fae",
         "lean:range.char_boundary": "fnv1a64:9b28bdac2000b248",
         "lean:range.is_continuation": "fnv1a64:ae9403ad37b664a8",
         "mutant:compare-store-to-itself": "fnv1a64:43bfa8bacb558d49",
-        "proof:Proofs/PlyruneKernel.lean": "fnv1a64:343fd988e591d57c",
+        "proof:Proofs/PlyruneKernel.lean": "fnv1a64:07f3b91875087400",
         "toolchain": "fnv1a64:bb9e124c5c1e30bd"
       },
       "mutant_results": [
@@ -248,7 +256,60 @@
           ]
         }
       ]
+    },
+    {
+      "crate": "plyrune-kernel",
+      "file": "crates/plyrune-kernel/src/snapshot.rs",
+      "function": "inspect_range",
+      "lean": "plyrune_kernel.snapshot.inspect_range",
+      "theorems": [
+        "Proofs.Snapshot.inspect_spec"
+      ],
+      "total": "Proofs.Snapshot.inspect_spec",
+      "subsumes": [],
+      "mutants": [
+        "omit-high-half",
+        "omit-low-half"
+      ],
+      "outcome": "proved",
+      "badge": "proved",
+      "fingerprint": "fnv1a64:f511414b541f62d9",
+      "inputs": {
+        "lean:range.RangeRefusal": "fnv1a64:1d0bd289ef603991",
+        "lean:range.admit": "fnv1a64:074bddc930b5303a",
+        "lean:range.admit_text": "fnv1a64:d51b2cd7793d9fae",
+        "lean:range.char_boundary": "fnv1a64:9b28bdac2000b248",
+        "lean:range.is_continuation": "fnv1a64:ae9403ad37b664a8",
+        "lean:snapshot.SnapshotKey": "fnv1a64:e6c9e11bcd59a8b7",
+        "lean:snapshot.inspect_range": "fnv1a64:bf68aee9465d506e",
+        "mutant:omit-high-half": "fnv1a64:5ad259e3eee20c16",
+        "mutant:omit-low-half": "fnv1a64:258a38d7f536e4af",
+        "proof:Proofs/PlyruneKernel.lean": "fnv1a64:07f3b91875087400",
+        "toolchain": "fnv1a64:bb9e124c5c1e30bd"
+      },
+      "mutant_results": [
+        {
+          "mutant": "omit-high-half",
+          "status": "killed",
+          "broken": [
+            "Proofs.Snapshot.inspect_spec"
+          ],
+          "direct": [
+            "Proofs.Snapshot.inspect_spec"
+          ]
+        },
+        {
+          "mutant": "omit-low-half",
+          "status": "killed",
+          "broken": [
+            "Proofs.Snapshot.inspect_spec"
+          ],
+          "direct": [
+            "Proofs.Snapshot.inspect_spec"
+          ]
+        }
+      ]
     }
   ],
-  "commit": "8c84e8590ca51fb48b95b8bb5a13afb6462d67f9"
+  "commit": "47f4f3d579a6cd4b3a8f69fa13cc6d2666fdf890"
 }

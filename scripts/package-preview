@@ -1,0 +1,23 @@
+#!/bin/sh
+# Run in the Compose tools image. Build only the committed source.
+set -eu
+out=${1:?absolute output directory required}
+case "$out" in /*) ;; *) exit 2;; esac
+work=$(mktemp -d)
+trap 'rm -rf "$work"' EXIT
+git archive -o "$work/source.tar" HEAD
+tar -xf "$work/source.tar" -C "$work"
+cd "$work"
+# The linked binary requires no host runtime libraries.
+export RUSTFLAGS="-C target-feature=+crt-static"
+cargo +1.98.0 build --release --locked --target x86_64-unknown-linux-gnu -p plyrune-cli
+asset=plyrune-linux-x86_64
+cp "$CARGO_TARGET_DIR/x86_64-unknown-linux-gnu/release/plyrune" "$work/$asset"
+strip "$work/$asset"
+readelf -l "$asset" > program-headers
+readelf -d "$asset" > dynamic
+if grep -q INTERP program-headers || grep -q NEEDED dynamic; then exit 1; fi
+python3 qualification/inspect-cli.py "$work/$asset"
+mkdir -p "$out"
+cp "$asset" "$out/"
+sha256sum "$asset" > "$out/$asset.sha256"

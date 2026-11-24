@@ -1,4 +1,8 @@
 //! Admission and canonical hashing for `docs/FIXTURE-PROFILE.md`.
+use plyrune_kernel::{
+    range::RangeRefusal,
+    snapshot::{SnapshotKey, inspect_range},
+};
 use sha2::{Digest, Sha256};
 use std::collections::BTreeMap;
 
@@ -16,10 +20,38 @@ pub struct Entry<'a> {
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub struct SnapshotDigest([u8; 32]);
 
+/// Failures resolving one stateless view into an admitted fixture.
+#[derive(Debug, Eq, PartialEq)]
+pub enum ViewRefusal {
+    /// No resource has this exact path.
+    UnknownPath,
+    /// The requested slice or its snapshot identity failed admission.
+    Admission(RangeRefusal),
+    /// Views are limited to 4096 source bytes.
+    DisplayBudget,
+    /// Unexpected conversion failure; never return an empty success.
+    Representation,
+}
+
 impl SnapshotDigest {
     /// SHA-256 bytes in digest order.
     pub const fn bytes(&self) -> &[u8; 32] {
         &self.0
+    }
+
+    /// Construct the requested content identity; does not admit a manifest.
+    pub const fn from_bytes(bytes: [u8; 32]) -> Self {
+        Self(bytes)
+    }
+
+    fn key(&self) -> Result<SnapshotKey, ViewRefusal> {
+        match self.0.as_chunks::<16>() {
+            ([hi, lo], []) => Ok(SnapshotKey::from_halves(
+                u128::from_be_bytes(*hi),
+                u128::from_be_bytes(*lo),
+            )),
+            _ => Err(ViewRefusal::Representation),
+        }
     }
 }
 
@@ -110,6 +142,33 @@ impl<'a> Fixture<'a> {
     /// Framed digest, independent of input enumeration order.
     pub fn digest(&self) -> SnapshotDigest {
         self.digest
+    }
+
+    /// Resolve an exact path and inspect a bounded half-open UTF-8 byte range.
+    ///
+    /// # Errors
+    /// Returns the missing path, proved admission refusal, or display budget failure.
+    pub fn inspect(
+        &self,
+        expected: SnapshotDigest,
+        path: &str,
+        start: usize,
+        end: usize,
+    ) -> Result<&str, ViewRefusal> {
+        let text = self.resources.get(path).ok_or(ViewRefusal::UnknownPath)?;
+        inspect_range(
+            &expected.key()?,
+            &self.digest.key()?,
+            text.as_bytes(),
+            start,
+            end,
+        )
+        .map_err(ViewRefusal::Admission)?;
+        let view = text.get(start..end).ok_or(ViewRefusal::Representation)?;
+        if view.len() > 4096 {
+            return Err(ViewRefusal::DisplayBudget);
+        }
+        Ok(view)
     }
 
     /// All admitted paths and bytes, including resources containing no matches.
