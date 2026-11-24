@@ -1,0 +1,102 @@
+{
+  "profile": "native-fixture-trace/v1",
+  "inputSha256": {
+    "input.json": "6ce86f7c06d93287b2abcb70450a4937b03d3a61e96d965847142f5a7571950e",
+    "requirement.json": "8476f4382ed6a639b4e3ca52e0f3843fe44e6884b9519334c1afae3d930704ff",
+    "expected-candidate.json": "541a9cc717a9ea88ad277b1bdbaae71ea036c750aa68a9032056067c07c1179f"
+  },
+  "tasks": {
+    "single lookup": {
+      "observed": [
+        "config/client/app.env",
+        8
+      ],
+      "oraclePassed": true
+    },
+    "single patch": {
+      "observed": {
+        "path": "config/client/app.env",
+        "output": "PRIMARY=service_endpoint\nSECONDARY=legacy_endpoint\n"
+      },
+      "oraclePassed": true
+    },
+    "repeated inspection": {
+      "observed": {
+        "displayed": [
+          [
+            "config/client/app.env",
+            8
+          ],
+          [
+            "config/client/app.env",
+            34
+          ]
+        ],
+        "retained": 6
+      },
+      "oraclePassed": true
+    },
+    "broad migration": {
+      "observed": {
+        "domain": [
+          "config/client/app.env",
+          "config/jobs/worker.env",
+          "config/server/api.env",
+          "config/unchanged.env"
+        ],
+        "hits": [
+          [
+            "config/client/app.env",
+            8
+          ],
+          [
+            "config/client/app.env",
+            34
+          ],
+          [
+            "config/jobs/worker.env",
+            9
+          ],
+          [
+            "config/jobs/worker.env",
+            32
+          ],
+          [
+            "config/server/api.env",
+            8
+          ],
+          [
+            "config/server/api.env",
+            33
+          ]
+        ],
+        "outputSha256": {
+          "config/client/app.env": "7d85b3512444d1324466de18843a6c30be533e118bac7fe26a9923a708a2cfe0",
+          "config/jobs/worker.env": "ee2ab02e4a6adff81441cbd1b04f5d4c03f544ab3bece100384271f98075b8d0",
+          "config/server/api.env": "9456bbe436233135bfddff24077addddf1e3e834619540553e9dee47b48836a6",
+          "config/unchanged.env": "9b3b2b8dc401fbdfc410aa6883b76f9c4c7c38069724f13e6c31fc154a2a1f52",
+          "docs/notes.txt": "90a0b6580942f852a612b6fd6671afc1179ffcfd8f1ffacd775da121c8614966"
+        }
+      },
+      "oraclePassed": true
+    },
+    "narrowed scope trap": {
+      "observed": {
+        "missedPaths": [
+          "config/client/app.env",
+          "config/jobs/worker.env"
+        ]
+      },
+      "oraclePassed": true
+    },
+    "negative dependency recovery": {
+      "observed": {
+        "previouslyAbsent": [
+          "config/unchanged.env"
+        ],
+        "newMatchCount": 7
+      },
+      "oraclePassed": true
+    }
+  }
+}

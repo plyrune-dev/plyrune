@@ -1,0 +1,17 @@
+name: Feature or design proposal
+description: Propose a scoped change with an acceptance test.
+labels: [needs-triage, enhancement]
+body:
+  - type: textarea
+    id: task
+    attributes:
+      label: What task should become possible?
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Scope, dependencies and acceptance evidence
+      description: Identify changed contracts, refusal cases and relevant gates.
+    validations:
+      required: true

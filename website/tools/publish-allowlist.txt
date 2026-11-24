@@ -2,6 +2,7 @@
 # Everything else under website/ (concept PNGs, DESIGN.md, PROMPTS.md, tools/, unreferenced brand
 # variants) stays in the private repository. stage.sh copies ONLY the paths listed here.
 index.html
+changelog.html
 404.html
 styles.css
 measurements.json

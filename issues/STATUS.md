@@ -1,6 +1,6 @@
 # Tauten issue submission status
 
-23 November 2026: **neither draft has been posted**.
+24 November 2026: both topics are now filed upstream: [stamp binding #96](https://github.com/tauten-dev/tauten/issues/96) and [mapping accuracy #97](https://github.com/tauten-dev/tauten/issues/97). No duplicates were submitted. The following is the historical authoring-workspace record from 23 November.
 
 Both drafts were source-inspected and independently reviewed. Searches found the originating/related issues, but no duplicate covering either proposed correction.
 

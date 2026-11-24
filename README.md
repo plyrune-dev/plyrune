@@ -1,5 +1,7 @@
 # Plyrune
 
+[Changelog](https://plyrune-dev.github.io/changelog.html) · [Milestones](https://github.com/plyrune-dev/plyrune/milestones) · [Issues and RFC process](CONTRIBUTING.md)
+
 Plyrune is developing a candidate-only editing interface for agents. Start
 with the [handover](START-HERE.md) for the design and [adoption record](docs/ADOPTION.md)
 for implementation evidence and open gaps.

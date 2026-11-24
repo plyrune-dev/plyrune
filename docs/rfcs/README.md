@@ -1,0 +1,15 @@
+# RFC registry
+
+Issues track delivery; RFCs record decisions. Adapted from [Writfold’s RFC flow](https://github.com/writfold-dev/writfold/blob/main/docs/rfcs/README.md). See [contribution rules](../../CONTRIBUTING.md).
+
+| Decision | Tracking issue | Design / implementation |
+|---|---|---|
+| [Delivery records](2026-11-24-delivery-records.md) | [#28](https://github.com/plyrune-dev/plyrune/issues/28) | accepted / complete |
+| [Independent requirement framing](2026-11-24-requirement-framing.md) | [#3](https://github.com/plyrune-dev/plyrune/issues/3) | draft / not-started |
+| [Import the reviewed candidate-only handover](2026-11-24-candidate-only-handover.md) | [#21](https://github.com/plyrune-dev/plyrune/issues/21) | accepted / complete (backfill) |
+| [Build and qualify every crate in Docker with pinned Tauten](2026-11-24-docker-tauten.md) | [#22](https://github.com/plyrune-dev/plyrune/issues/22) | accepted / complete (backfill) |
+| [Check byte ranges and store-local provenance in the kernel](2026-11-24-range-and-store.md) | [#23](https://github.com/plyrune-dev/plyrune/issues/23) | accepted / complete (backfill) |
+| [Reuse the exact pinned splice engine behind a qualified bridge](2026-11-24-retained-splice.md) | [#24](https://github.com/plyrune-dev/plyrune/issues/24) | accepted / complete (backfill) |
+| [Admit a finite fixture manifest and expose its canonical snapshot digest](2026-11-24-fixture-snapshot.md) | [#25](https://github.com/plyrune-dev/plyrune/issues/25) | accepted / complete (backfill) |
+| [Introduce six native task controls before benchmarking](2026-11-24-native-baseline.md) | [#26](https://github.com/plyrune-dev/plyrune/issues/26) | accepted / complete (backfill) |
+| [Deploy the allowlisted design preview to the public organization site](2026-11-24-pages-site.md) | [#27](https://github.com/plyrune-dev/plyrune/issues/27) | accepted / complete (backfill) |
