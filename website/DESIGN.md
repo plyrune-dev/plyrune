@@ -2,16 +2,17 @@
 
 Live at https://plyrune-dev.github.io/ since 23 November 2026 (first preview) and 24 November 2026 (production build).
 
-This file records what the site is, why it looks the way it does, where every asset comes from, which checks were actually run with their results, how to publish, and what is still open. It is not published.
+The current site is a short guide to the released CLI, its stale-input example and the limits of its proof. It is not a product-roadmap dashboard. The measurements, screenshots and comparisons from section 2 onward describe earlier site revisions, not accessibility or layout results for this release.
 
 ## 1. What is where
 
 | Path | Published? | Purpose |
 |---|---|---|
-| `index.html` | yes | The single page: HTML, content and one inline script (the colour-scheme toggle) |
+| `index.html`, `changelog.html`, `install.sh` | yes | Preview walkthrough, dated source/release notes and checksum-pinned Linux installer |
+| `theme.js` | yes | Restores the explicit origin-local light/dark preference before paint; otherwise the system palette applies |
 | `styles.css` | yes | All styling, both colour schemes, print and forced-colours rules |
-| `404.html` | yes | GitHub Pages not-found page, self-contained (inline styles, no script) |
-| `measurements.json` | yes | Truthful empty data state; linked from the Measurements section |
+| `404.html` | yes | Not-found page; shared assets resolve at the organization site's root even from a nested missing URL |
+| `measurements.json` | yes | Unmeasured task outcomes, linked from the evidence section |
 | `.nojekyll` | yes | Tells GitHub Pages to publish the files as they are |
 | `brand/favicon.svg`, `brand/favicon.ico`, `brand/apple-touch-icon.png` | yes | The icons the page references |
 | `brand/*.svg` (icons and lockups) | no | Production brand vectors, kept for reuse |

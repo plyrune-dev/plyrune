@@ -54,9 +54,7 @@ page = Page()
 page.feed(html)
 assert len(page.ids) == len(set(page.ids)), 'duplicate HTML ids'
 assert set(page.anchors) <= set(page.ids), 'broken HTML anchors'
-assert not page.scripts, 'unexpected external script'
-assert 'not a running Plyrune engine' in html
-assert 'Not measured yet' in html
+assert page.scripts == ['theme.js'], 'only the local theme bootstrap is published'
 metrics = json.loads((ROOT/'website/measurements.json').read_text())
 assert metrics['status'] == 'unmeasured' and metrics['trials'] == [] and metrics['metrics'] == []
 assert metrics['assurance']['newComposition'] == 'planned'

@@ -22,6 +22,7 @@ Mounts used by the scripts: site root at `/site`, this directory at `/tools`, th
 | Tool | Purpose |
 |---|---|
 | `sitecheck.mjs` | Loads the site in headless browsers and reports layout, axe-core, focus and hover contrast, target size, reduced motion, text spacing, forced colours, print, references, wording and byte weights; takes screenshots |
+| `themecheck.mjs` | Exercises system and explicit theme selection across reload, tabs, changelog and nested 404; checks denied storage and disabled JS. Pass `/site` or the live organization URL. |
 | `summarize.mjs` | Prints the key facts of a report as plain lines |
 | `make-brand.mjs` | Writes the brand SVGs from their parameters |
 | `render-icons.mjs` | Rasterises `favicon.ico` and `apple-touch-icon.png` |
@@ -32,7 +33,7 @@ Mounts used by the scripts: site root at `/site`, this directory at `/tools`, th
 Typical invocations (arguments after the tool name):
 
 ```
-sitecheck.mjs --root /site --pages index.html,404.html --modes file,root,subpath --out /out/after --prefix after --shots --full --pairs ink/paper,muted/paper
+sitecheck.mjs --root /site --pages index.html,changelog.html,404.html --modes root --out /out/after --prefix after --shots --shotMode root --full --pairs ink/paper,muted/paper
 sitecheck.mjs --root /site --url https://plyrune-dev.github.io/ --pages index.html,404.html --shotMode live --out /out/live --prefix live --shots
 sitecheck.mjs --root /site --font wide --out /out/wide --prefix wide --full
 sitecheck.mjs --root /site --browsers firefox --out /out/ff --prefix ff

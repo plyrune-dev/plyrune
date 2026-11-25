@@ -1,10 +1,18 @@
 //! Admission and canonical hashing for `docs/FIXTURE-PROFILE.md`.
 use plyrune_kernel::{
-    range::RangeRefusal,
+    capture::ResourceId,
     snapshot::{SnapshotKey, inspect_range},
 };
 use sha2::{Digest, Sha256};
 use std::collections::BTreeMap;
+
+mod capture;
+pub use capture::{BoundFixture, FixtureResource, TextCapture};
+pub use plyrune_kernel::{
+    binding::{IncarnationId, OwnerId, StoreBinding},
+    capture::ByteOffset,
+    range::RangeRefusal,
+};
 
 /// Finite input supplied by the host. Neither mode nor encoding is trusted.
 pub struct Entry<'a> {
@@ -74,8 +82,13 @@ pub enum Refusal {
 
 /// Validated immutable inventory; the immutable source borrow pins its bytes.
 pub struct Fixture<'a> {
-    resources: BTreeMap<&'a str, &'a str>,
+    resources: BTreeMap<&'a str, ResourceRow<'a>>,
     digest: SnapshotDigest,
+}
+
+struct ResourceRow<'a> {
+    text: &'a str,
+    ordinal: ResourceId,
 }
 
 fn frame(hash: &mut Sha256, bytes: &[u8]) -> Result<(), Refusal> {
@@ -117,7 +130,11 @@ impl<'a> Fixture<'a> {
                 return Err(Refusal::Budget);
             }
             let text = std::str::from_utf8(entry.bytes).map_err(Refusal::Encoding)?;
-            if resources.insert(entry.path, text).is_some() {
+            let row = ResourceRow {
+                text,
+                ordinal: ResourceId::from_ordinal(0),
+            };
+            if resources.insert(entry.path, row).is_some() {
                 return Err(Refusal::Duplicate);
             }
         }
@@ -128,10 +145,12 @@ impl<'a> Fixture<'a> {
                 .map_err(Refusal::Length)?
                 .to_be_bytes(),
         );
-        for (path, content) in &resources {
+        // Bind IDs in canonical path order, never in host enumeration order.
+        for (index, (path, row)) in resources.iter_mut().enumerate() {
+            row.ordinal = ResourceId::from_ordinal(u64::try_from(index).map_err(Refusal::Length)?);
             frame(&mut hash, path.as_bytes())?;
             frame(&mut hash, b"regular")?;
-            frame(&mut hash, content.as_bytes())?;
+            frame(&mut hash, row.text.as_bytes())?;
         }
         Ok(Self {
             digest: SnapshotDigest(hash.finalize().into()),
@@ -142,6 +161,11 @@ impl<'a> Fixture<'a> {
     /// Framed digest, independent of input enumeration order.
     pub fn digest(&self) -> SnapshotDigest {
         self.digest
+    }
+
+    /// Associate this immutable fixture with a host-issued store identity.
+    pub fn bind(self, store: StoreBinding) -> BoundFixture<'a> {
+        BoundFixture::new(self, store)
     }
 
     /// Resolve an exact path and inspect a bounded half-open UTF-8 byte range.
@@ -155,7 +179,11 @@ impl<'a> Fixture<'a> {
         start: usize,
         end: usize,
     ) -> Result<&str, ViewRefusal> {
-        let text = self.resources.get(path).ok_or(ViewRefusal::UnknownPath)?;
+        let text = self
+            .resources
+            .get(path)
+            .ok_or(ViewRefusal::UnknownPath)?
+            .text;
         inspect_range(
             &expected.key()?,
             &self.digest.key()?,
@@ -173,7 +201,7 @@ impl<'a> Fixture<'a> {
 
     /// All admitted paths and bytes, including resources containing no matches.
     pub fn resources(&self) -> impl ExactSizeIterator<Item = (&str, &str)> {
-        self.resources.iter().map(|(&p, &s)| (p, s))
+        self.resources.iter().map(|(&p, row)| (p, row.text))
     }
 }
 

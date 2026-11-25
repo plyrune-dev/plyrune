@@ -188,15 +188,16 @@ const TOKEN_PROBE = (pairs) => {
   return pairs.map(([fg, bg]) => { const fgRaw = defined(`--${fg}`), bgRaw = defined(`--${bg}`); if (!fgRaw || !bgRaw) return { fg, bg, fgRaw, bgRaw, ratio: null, note: 'token not defined on this page' }; const a = norm(`--${fg}`), b = norm(`--${bg}`); const la = lum(a), lb = lum(b); const [x, y] = [la, lb].sort((p, q) => q - p); return { fg, bg, fgRaw, bgRaw, fgComputed: a, bgComputed: b, ratio: la === null || lb === null ? null : Math.round(((x + 0.05) / (y + 0.05)) * 100) / 100 }; });
 };
 
-const REQUIRED_STRINGS = ['not a running Plyrune engine', 'Not measured yet'];
-const FORBIDDEN = [['verified agent', /verified agent/i], ['correct edits', /correct edits/i], ['safe at any time', /safe at any time/i], ['all callers', /all callers/i], ['prevents stale edits', /prevents stale edits/i], ['github.com URL', /github\.com\//i], ['install command', /\b(npm|cargo|brew|pip|apt|pnpm|yarn)\s+install\b|\bcurl\b[^\n]*\|\s*(ba)?sh\b/i], ['percent speedup', /\d+(\.\d+)?\s?%\s+(faster|slower|speedup|improvement|cheaper|fewer|less|more\b)/i], ['Nx faster', /\d+(\.\d+)?\s?[x×]\s+(faster|speedup|cheaper)/i], ['customers', /trusted by|customer logos?|\b\d+\s+customers?\b/i], ['stars', /\b\d[\d,.]*\s?(k\s)?stars?\b/i], ['trial', /\bfree trial\b|\b\d+\s+day trial\b|\btrial\s+count\b/i]];
+const PREVIEW_INSTALL = 'curl -fsSL https://plyrune-dev.github.io/install.sh | sh';
+const RELEASE_COMMANDS = [PREVIEW_INSTALL, '"$HOME/.local/bin/plyrune" demo'];
+const FORBIDDEN = [['verified agent', /verified agent/i], ['correct edits', /correct edits/i], ['safe at any time', /safe at any time/i], ['all callers', /all callers/i], ['prevents stale edits', /prevents stale edits/i], ['unrelated GitHub URL', /github\.com\/(?!plyrune-dev\/plyrune(?:[/?#\s]|$))/i], ['install command', /\b(npm|cargo|brew|pip|apt|pnpm|yarn)\s+install\b|\bcurl\b[^\n]*\|\s*(ba)?sh\b/i], ['percent speedup', /\d+(\.\d+)?\s?%\s+(faster|slower|speedup|improvement|cheaper|fewer|less|more\b)/i], ['Nx faster', /\d+(\.\d+)?\s?[x×]\s+(faster|speedup|cheaper)/i], ['customers', /trusted by|customer logos?|\b\d+\s+customers?\b/i], ['stars', /\b\d[\d,.]*\s?(k\s)?stars?\b/i], ['trial', /\bfree trial\b|\b\d+\s+day trial\b|\btrial\s+count\b/i]];
 const WATCH = [/proof/i, /\bprove[ds]?\b|\bproven\b|proofs/i, /verif/i, /guarantee/i, /\bsafe\b|\bsafely\b/i, /\bcorrect(ly|ness)?\b/i, /\binstall/i, /\bfast(er)?\b|speed|performance/i, /\d+\s?%/, /\bfaster\b|\bcheaper\b|\breduce[sd]?\b|\bsave[sd]?\b/i, /\bgithub\b|\brepo(sitory)?\b/i];
 
 function wordingLint(text, label, required) {
   const flat = text.replace(/\s+/g, ' ');
   const res = { label, missing: required.filter((s) => !flat.includes(s)), forbidden: [], watch: {} };
   // Only this one published, checksum-pinned preview installer is qualified.
-  const checked = flat.replaceAll('curl -fsSL https://plyrune-dev.github.io/install.sh | sh', '');
+  const checked = flat.replaceAll(PREVIEW_INSTALL, '');
   for (const [name, re] of FORBIDDEN) { const m = checked.match(re); if (m) res.forbidden.push(`${name}: "${m[0]}"`); }
   for (const re of WATCH) { const ms = [...flat.matchAll(new RegExp(re.source, re.flags.includes('g') ? re.flags : re.flags + 'g'))]; if (ms.length) res.watch[re.source] = ms.map((m) => { const i = m.index; return '…' + flat.slice(Math.max(0, i - 38), i + m[0].length + 38).trim() + '…'; }); }
   return res;
@@ -348,7 +349,7 @@ async function main() {
     const html = fs.readFileSync(htmlPath, 'utf8');
     const attrText = [...html.matchAll(/="([^"]*)"/g)].map((m) => m[1]).join(' ');
     const text = (html.replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1>/gi, ' ').replace(/<[^>]+>/g, ' ') + ' ' + attrText).replace(/\s+/g, ' ');
-    wording.push(wordingLint(text, pageName, pageName === 'index.html' ? REQUIRED_STRINGS : []));
+    wording.push(wordingLint(text, pageName, pageName === 'index.html' ? RELEASE_COMMANDS : []));
     for (const m of html.matchAll(/<link[^>]+rel=["']?stylesheet["']?[^>]*>/gi)) { const h = (m[0].match(/href=["']([^"']+)["']/) || [])[1]; if (h && !/^(https?:)?\/\//.test(h)) { const fp = path.resolve(path.dirname(htmlPath), h.split('?')[0]); if (fs.existsSync(fp)) { const css = fs.readFileSync(fp, 'utf8'); for (const u of css.matchAll(/url\(\s*['"]?([^'")]+)['"]?\s*\)/g)) report.cssUrls = (report.cssUrls || []).concat([[pageName, 'css-url', u[1]]]); for (const u of css.matchAll(/@import\s+['"]([^'"]+)['"]/g)) report.cssUrls = (report.cssUrls || []).concat([[pageName, 'css-import', u[1]]]); } } }
   }
 

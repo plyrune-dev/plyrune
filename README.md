@@ -29,6 +29,10 @@ P="$HOME/.local/bin/plyrune"
 
 The view contains `legacy_endpoint`. Edit any resource's text in `fixture.json` and repeat the last command: it exits 2 with `WrongSnapshot`. Offsets are half-open UTF-8 **byte** offsets, not character indices.
 
+### Retain an exact capture (Rust library, not preview 1)
+
+For an in-process harness, bind an admitted `Fixture` to a host-issued `StoreBinding`, then use `BoundFixture::open(path)` to select the intended resource. `resource.capture(ByteOffset::new(start), ByteOffset::new(end))` retains its identity and byte coordinates. Resolve with `resource.resolve(&capture)`; supplying a different resource with identical text is an error, not a successful read. No bytes are copied into the capture, and no handle crosses a process boundary. The [external library consumer](crates/plyrune-core/tests/fixture_captures.rs) shows the complete calls. See the [capture RFC](docs/rfcs/2026-11-25-fixture-captures.md) for host identity assumptions and refusal order.
+
 ### Build from source
 
 Use Docker Compose on linux/amd64. The tools image includes Tauten's pinned

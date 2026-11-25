@@ -6,6 +6,7 @@ changelog.html
 install.sh
 404.html
 styles.css
+theme.js
 measurements.json
 .nojekyll
 brand/favicon.svg

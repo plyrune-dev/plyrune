@@ -4,7 +4,7 @@ Issues track delivery; RFCs record decisions. Adapted from [Writfold’s RFC flo
 
 | Decision | Tracking issue | Design / implementation |
 |---|---|---|
-| [Exact fixture captures](2026-11-25-fixture-captures.md) | [#4](https://github.com/plyrune-dev/plyrune/issues/4) | accepted / in-progress; in-process library only |
+| [Exact fixture captures](2026-11-25-fixture-captures.md) | [#4](https://github.com/plyrune-dev/plyrune/issues/4) | accepted / complete; in-process library only |
 | [Snapshot-bound fixture inspection](2026-11-24-fixture-inspect-preview.md) | [#42](https://github.com/plyrune-dev/plyrune/issues/42) | preview; stateless fixture CLI |
 | [Portable reports and optional Writfold](2026-11-24-portable-check-reports.md) | [#39](https://github.com/plyrune-dev/plyrune/issues/39) | draft; snapshot adapter smoke only |
 | [Check arbitrary native candidates (full issue RFC)](https://github.com/plyrune-dev/plyrune/issues/30) | #30 | draft; decide before checker entrypoint |

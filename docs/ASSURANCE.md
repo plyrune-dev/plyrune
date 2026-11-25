@@ -29,6 +29,8 @@ Match-set equality alone does not detect omission of a file that contains no mat
 
 Prove refusal correctness and totality where needed, not only the happy path. Non-vacuity controls must exhibit valid nonempty success, valid no-change and meaningful rejection. Never mark a broad theorem complete because the implementation refuses every input.
 
+
+**PR-C01 fixture boundary:** the [capture RFC](rfcs/2026-11-25-fixture-captures.md) and [`Proofs.Capture.admit_capture_spec`](../proofs/Proofs/PlyruneKernel.lean) cover admission relative to an authoritative subject and byte image. The kernel rejects foreign schema, kind, store, resource and snapshot before coordinates. The [library consumer](../crates/plyrune-core/tests/fixture_captures.rs) tests exact slice resolution including same-text resources and canonical path ordering. Host owner/incarnation issuance, SHA-256 collision resistance and authorization remain assumptions; neither fixture mapping nor the Rust slice operation is promoted to a Lean result.
 ## Trusted bridges
 
 ### Proof-first sequencing (owner decision, 24 November)
