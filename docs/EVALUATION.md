@@ -37,6 +37,21 @@ Use real tasks where possible and label adversarial mechanism tests separately. 
 
 The grader must not just call the same production checker. Use independently authored exact expected candidates/sets and untouched-file checks for the finite fixtures. With real code tasks, separate build/test success, requested-behavior correctness, coverage and unintended changes. Hidden grading material stays out of agent workspaces and tool hints.
 
+### Requirement admission in the six-task pilot
+
+Proposed for [#12](https://github.com/plyrune-dev/plyrune/issues/12), using the [three accepted admission modes](rfcs/2026-11-24-requirement-admission-authority.md). These are assignments for a future paired protocol, not results of the native fixture trace or evidence of an adopter. Production proof gates precede comparative trials.
+
+| Development task | Who fixes the scope before selection? |
+|---|---|
+| Single lookup | `host-authored`: experimenter fixes the lookup target. No migration report required. |
+| Single patch | `host-authored`: experimenter fixes the target and replacement. Keep the native fast path. |
+| Repeated inspection | `model-proposed, human-confirmed`: reviewer confirms the task and inventory counts before the first selection; subsequent views do not alter it. |
+| Broad literal migration | `host-authored`: use a protected base-revision requirement, not a policy supplied in the candidate. |
+| Narrowed-scope trap | **`model-authored` primary trial**: agent receives the broad natural-language request and writes its own formal scope. Also run separate paired `host-authored` and `model-proposed, human-confirmed` controls on the same task. |
+| Stale/negative dependency recovery | `host-authored`: keep the task fixed; on the changed manifest record a fresh snapshot-specific admission. |
+
+Keep mode, authority and review opportunity the same across competing arms in each pair. For each scope-trap trial, retain the original request, proposed and finally admitted scope, inventory counts, reviewer intervention/time (if any), and the candidate. Grade independently against **both** the hidden broad task and the exact stated task. A self-narrowed requirement can legitimately pass the latter and fail the former. Do not give the model the hidden formal scope or repair its statement in the model-authored arm. Record failed/refused confirmations, model drafting and human review cost; report by mode, not pooled as independent coverage successes. A separate fixed-input control can vary just the mode for identical narrow bytes to check the report qualification without estimating a user benefit.
+
 ## Trial design
 
 Begin with six development tasks and repeated paired trials to discover workflow problems, not headline statistics. Use at least two real harness adapters before claiming broad harness independence. For held-out evaluation, use variance/failure rates from the pilot to choose task count and repeat count, then pre-register them. No arbitrary small sample guarantees power.

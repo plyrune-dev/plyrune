@@ -1,0 +1,19 @@
+version = 1
+
+[gate]
+crates = ["qualification/matcher-spike"]
+
+[[claim]]
+crate = "matcher-spike"
+file = "qualification/matcher-spike/src/lib.rs"
+function = "scan"
+lean = "matcher_spike.scan"
+theorems = ["Spike.scan_spec"]
+mutants = ["skip-initial-match"]
+
+[[mutant]]
+name = "skip-initial-match"
+file = "qualification/matcher-spike/src/lib.rs"
+before = "Some(scan_from(bytes, needle, first_only, 0))"
+after = "Some(scan_from(bytes, needle, first_only, 1))"
+direct = ["Spike.scan_spec"]

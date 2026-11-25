@@ -1,0 +1,70 @@
+{
+  "requirements": {
+    "fixture": [["config/", "legacy_endpoint", "service_endpoint"], "181a225e55b80995712132d99dd6bbbf04b131ec8a98c97a85c552e0198a2dfe"],
+    "server": [["config/server/", "legacy_endpoint", "service_endpoint"], "add0caa721ac59253892565c77977da6d3f37fe55af037c21b343be3ec02c0ef"],
+    "delete": [["config/", "legacy_endpoint", ""], "826aa9f7414811e6ee6828b7685cf249048fc37a581eac948f870d23e7afc3ab"],
+    "overlap": [["x/", "aa", "Z"], "ec46490ded0be5da4f83530ebdb2dc4745208805d8893317b2b7fb99cf0042bf"],
+    "composed": [["x/", "\u00e9", "e\u0301"], "c178ec5cd89ee82d5d7db6e1e20730d36a574903d595745ebaf0cff1e7ec5c04"],
+    "decomposed": [["x/", "e\u0301", "\u00e9"], "7c709d18ee12bb2d98c98492233261484673b168e2b23b68bce13e4351ee86ca"],
+    "empty-needle": [["x/", "", "Z"], "EmptyNeedle"],
+    "empty-prefix": [["", "aa", "Z"], "InvalidPrefix"],
+    "unterminated-prefix": [["config", "aa", "Z"], "InvalidPrefix"],
+    "dot-segment": [["config/../", "aa", "Z"], "InvalidPrefix"]
+  },
+  "hostRecord": {
+    "owner": "release-team", "source": "config-migration",
+    "snapshot": "6ba5a5e50f91714f5a6d96a5ad3a07e525f375f95b6a2b86b2594673319b9d5c",
+    "requirement": "181a225e55b80995712132d99dd6bbbf04b131ec8a98c97a85c552e0198a2dfe",
+    "mode": "host-authored", "evidenceRef": "policy-17"
+  },
+  "admissionHashes": {
+    "host-authored": "f09232b80d9e54f19798e170e7a29b12aafd7160099b9b03eeb8aadb048ab5df",
+    "model-proposed, human-confirmed": "93ec66f41c59e0035d724b437ddcc729c77d819b7e7187a4876a11ad2a9102d9",
+    "model-authored": "9f59a2f6153b2b51679a9958eb5af176046000fb4f75fe8e2a0b80b0441ee979"
+  },
+  "bindings": [
+    {"name":"same subjects", "expect":"Bound"},
+    {"name":"host missing mode", "host":{"mode":null}, "expect":"InvalidMode"},
+    {"name":"unknown mode before source mismatch", "admission":{"mode":"auto", "source":"other"}, "expect":"InvalidMode"},
+    {"name":"missing evidence", "admission":{"evidenceRef":null}, "expect":"MissingEvidence"},
+    {"name":"agent cannot promote admission", "host":{"mode":"model-authored"}, "expect":"WrongMode"},
+    {"name":"evidence from another decision", "admission":{"evidenceRef":"policy-18"}, "expect":"WrongEvidence"},
+    {"name":"same bytes wrong owner and source", "base":{"owner":"other", "source":"mirror"}, "expect":"WrongOwner"},
+    {"name":"same bytes wrong source", "base":{"source":"mirror"}, "expect":"WrongSource"},
+    {"name":"S1 admission on S2 candidate despite same R", "base":{"snapshot":"updated-fixture"}, "expect":"WrongSnapshot"},
+    {"name":"admission and candidate agree but host expects S1", "admission":{"snapshot":"updated-fixture"}, "base":{"snapshot":"updated-fixture"}, "expect":"WrongSnapshot"},
+    {"name":"narrow scope under broad admission", "base":{"requirement":"server"}, "expect":"WrongRequirement"},
+    {"name":"different replacement under same scope", "admission":{"requirement":"delete"}, "expect":"WrongRequirement"}
+  ],
+  "witnesses": [
+    {"name":"whole fixture", "task":"fixture", "files":"fixture", "claim":{"config/client/app.env":[[8,23],[34,49]],"config/jobs/worker.env":[[9,24],[32,47]],"config/server/api.env":[[8,23],[33,48]],"config/unchanged.env":[]}, "expect":"ExactWitness"},
+    {"name":"all hits but missing zero-hit file", "task":"fixture", "files":"fixture", "claim":{"config/client/app.env":[[8,23],[34,49]],"config/jobs/worker.env":[[9,24],[32,47]],"config/server/api.env":[[8,23],[33,48]]}, "expect":"WrongInventory"},
+    {"name":"narrow for broad", "task":"fixture", "files":"fixture", "claim":{"config/server/api.env":[[8,23],[33,48]]}, "expect":"WrongInventory"},
+    {"name":"narrow for narrow", "task":"server", "files":"fixture", "claim":{"config/server/api.env":[[8,23],[33,48]]}, "expect":"ExactWitness"},
+    {"name":"empty inventory", "task":"overlap", "files":{}, "claim":{}, "expect":"WitnessedZero"},
+    {"name":"prefix boundary and witnessed no hits", "task":"overlap", "files":{"x/a":"a", "x2/b":"aa"}, "claim":{"x/a":[]}, "expect":"WitnessedZero"},
+    {"name":"unwitnessed empty", "task":"overlap", "files":{"x/a":""}, "claim":{}, "expect":"WrongInventory"},
+    {"name":"leftmost nonoverlap", "task":"overlap", "files":{"x/a":"aaaaa"}, "claim":{"x/a":[[0,2],[2,4]]}, "expect":"ExactWitness"},
+    {"name":"overlapping spans", "task":"overlap", "files":{"x/a":"aaaaa"}, "claim":{"x/a":[[0,2],[1,3],[2,4]]}, "expect":"WrongOccurrences"},
+    {"name":"duplicate span", "task":"overlap", "files":{"x/a":"aa"}, "claim":{"x/a":[[0,2],[0,2]]}, "expect":"WrongOccurrences"},
+    {"name":"composed bytes only", "task":"composed", "files":{"x/a":"e\u0301 \u00e9😀\u00e9\r\n"}, "claim":{"x/a":[[4,6],[10,12]]}, "expect":"ExactWitness"},
+    {"name":"decomposed bytes only", "task":"decomposed", "files":{"x/a":"e\u0301 \u00e9😀\u00e9\r\n"}, "claim":{"x/a":[[0,3]]}, "expect":"ExactWitness"},
+    {"name":"character offset is not a byte offset", "task":"composed", "files":{"x/a":"😀\u00e9"}, "claim":{"x/a":[[1,2]]}, "expect":"WrongOccurrences"}
+  ],
+  "budgetCases": [
+    {"name":"exact limits", "resources":256,"path":255,"prefix":255,"needle":8388608,"replacement":16777216,"evidenceRef":255,"inputs":[8388608,8388608,8388608,8388608],"matches":[4096,4096],"outputs":[16777216,16777216], "expect":"WithinLimits"},
+    {"name":"one too many resources", "resources":257, "expect":"InventoryLimit"},
+    {"name":"path bytes", "path":256, "expect":"PathLimit"},
+    {"name":"one large input", "inputs":[8388609], "expect":"InputLimit"},
+    {"name":"aggregate input", "inputs":[8388608,8388608,8388608,8388608,1], "expect":"TotalInputLimit"},
+    {"name":"prefix including slash", "prefix":256, "expect":"PrefixLimit"},
+    {"name":"needle encoded bytes", "needle":8388609, "expect":"NeedleLimit"},
+    {"name":"replacement encoded bytes", "replacement":16777217, "expect":"ReplacementLimit"},
+    {"name":"authority reference bytes", "evidenceRef":256, "expect":"IdentityLimit"},
+    {"name":"per-file match limit not repaired by chunking", "matches":[4097], "expect":"MatchLimit"},
+    {"name":"aggregate match limit", "matches":[4096,4096,1], "expect":"TotalMatchLimit"},
+    {"name":"excess matches precede excess output", "matches":[4097,4096], "outputs":[16777217], "expect":"MatchLimit"},
+    {"name":"candidate per-file bytes", "outputs":[16777217], "expect":"OutputLimit"},
+    {"name":"aggregate including untouched file", "outputs":[16777216,16777216,1], "expect":"TotalOutputLimit"}
+  ]
+}

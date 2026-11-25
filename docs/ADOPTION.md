@@ -6,6 +6,8 @@ Proof-first implementation: `ba0d37b` translated the new Rust function but the L
 
 The release source is `3a74b0f`. `docker compose run --rm -T gate` passed on its committed archive. The CLI runs the proved guard on the expected and recomputed snapshot keys; digest encoding, path lookup, resource acquisition and CLI behavior are tested bridges. The release build uses `sh scripts/package-preview /dist` in the Compose dev image with a mounted output directory. That script builds from `git archive HEAD`, checks for no dynamic interpreter/library dependencies, and runs `qualification/inspect-cli.py` on the stripped binary. Linux x86-64 is the only qualified target. The demo is not a search-completeness or candidate-coverage result.
 
+The [preview prerelease](https://github.com/plyrune-dev/plyrune/releases/tag/v0.0.1-preview.1) was published without rebuilding. The [hosted installer-checkout gates](https://github.com/plyrune-dev/plyrune/actions/runs/45496415175) passed. Anonymous release download and fresh install through the [live Pages script](https://plyrune-dev.github.io/install.sh) both yielded SHA-256 `82646d5bc43ec0fb243cd364a63de90686ff5057ab259b65dcb036ad458113b6`. The installer and live HTML matched Pages commit `31233d9`; `--version`, `demo` and `qualification/inspect-cli.py` ran on the installed file. See [#42](https://github.com/plyrune-dev/plyrune/issues/42) for the delivery evidence and [the separate matcher experiment](ASSURANCE.md#single-resource-matcher-experiment-34) for the next proof boundary.
+
 Build and check on linux/amd64 with `docker compose build tools` and
 `docker compose run --rm gate`. The latter checks a Git archive of HEAD;
 commit pending changes before using it. Rust 1.98.0, rustfmt and Clippy

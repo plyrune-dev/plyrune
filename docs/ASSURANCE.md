@@ -46,6 +46,27 @@ Prove refusal correctness and totality where needed, not only the happy path. No
 
 The failed cross-workspace extraction is not required for independent leaf proofs; it remains a blocker for claims depending on a single joint translation. TLA+ becomes useful if publication introduces concurrent writers or recovery choices, not for deciding equality or byte ranges.
 
+### Single-resource matcher experiment (#34)
+
+The isolated [Rust scan, Lean proposition and source control](../qualification/matcher-spike/) are a tractability experiment, **not** a new entrypoint or proof record for preview 1. `Spike.scan_spec` targets the actual extracted `scan` for arbitrary byte slices and either mode: reject an empty literal; otherwise produce exactly the greedy sequence of byte starts, stopping after the first hit in first mode. `Greedy` permits a one-byte skip only on a nonmatch and requires the entire literal to fit and agree at each hit. The skipped-match mutant starts at one instead of zero: on `abab` / `ab`, first changes from `[0]` to `[2]` and all from `[0,2]` to `[2]`. Near misses, complete-empty and refusal are separate controls.
+
+From the repository root with the [pinned tool image](ADOPTION.md) built:
+
+```sh
+PLYRUNE_CPUS=4 PLYRUNE_MEMORY=8g docker compose run --rm -T --entrypoint timeout gate \
+  --kill-after=30s 1200s python3 qualification/matcher-spike/run.py
+```
+
+One run gets 20 minutes, 4 CPUs, 8 GiB and 1024 processes. It copies just the probe and existing proof scaffold to scratch, compiles the Rust controls on both bodies, extracts with Charon/Aeneas, builds and audits Lean, and requires the re-extracted mutant to break `Spike.scan_spec` **directly**. Timeout, missing tool, build failure, missing audit or uncalibrated mutant is not a pass. The fresh translation digest and elapsed seconds are printed. The ephemeral drift comparison is a repeat extraction, not an independently committed baseline.
+
+Code-shape cost: two explicit index loops (window comparison and cursor scan), one allocation-backed offset vector, no iterators or opaque slice equality. The obligations include bounds and arithmetic, prefix agreement, decreasing loops, output room and the fact that every skipped position is a miss. Complexity is worst-case $O(nm)$ byte comparisons for resource and literal lengths $n,m$, and $O(k)$ output for $k$ hits. No benchmark or production budget is implied. Rust allocation/physical exhaustion, UTF-8 admission, owner/snapshot/capture binding, inventory traversal, zero-match resource dependencies and the proposed 4096-hit limit are outside this spike. No matcher result may be advertised for the released binary on this basis.
+
+Effort: initial agent investigation and authoring, approximately 0.1 wall-clock hours (22:03–22:09 UTC, 24 November), separate from extraction/proof time. This is not a human-effort estimate.
+
+**Executed result:** the native baseline and mutant controls passed, and Charon/Aeneas generated `MatcherSpike.lean` (SHA-256 `80e4ca9ce7bcf3ed446c3e2b720719a66b287d3426754665b98bb49c419d05c9`). The first two attempts stopped at Lean build: the branch tactic split the nested first-hit branch too early (22.6 s), then the decreasing-cursor goal remained open (12.0 s). With the same Rust, statement and control, explicit branch selection and a natural-number arithmetic step closed the proof. The final run (45.0 s) passed build, audit and direct mutant calibration: `skip-initial-match` broke `Spike.scan_spec`. Proceed to the inventory witness obligation in [#5](https://github.com/plyrune-dev/plyrune/issues/5); do not count the experiment as a seventh claim in the preview.
+
+### External bridges
+
 | Bridge/assumption | Initial treatment | What it does not establish |
 |---|---|---|
 | Rust → Charon/Aeneas → Lean | Pinned translation trust base and drift gate | Correctness of unextracted Rust |

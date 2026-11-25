@@ -35,9 +35,9 @@ Deliver in order:
 
 Acceptance controls: wrong owner, wrong snapshot, changed requirement, narrowed scope, empty/no-change, no-match file, duplicate members, overlapping spans, UTF-8 boundary error, limit exceeded, mixed input snapshots, altered report subject, partial view versus complete selection.
 
-Proofs: capture admission, exact finite membership, identity-preserving lowering, splice preservation reuse, requirement/candidate binding and the first composition claim. Classify inventory acquisition and canonical encoding independently. Do not require proving an entire Git implementation to describe the scoped pure theorem honestly.
+Evidence: use the [per-claim targets and blocked behavior](docs/ASSURANCE.md#proof-first-sequencing-owner-decision-24-november). Prove the selected Plyrune decisions over their own translated functions; retain Splicery's independent proof and test the identity/lowering bridge. C08 is a documented argument about those results and their premises, not a joint Lean theorem. Classify acquisition and canonical encoding separately.
 
-Exit: deterministic golden fixture plus real production-path checks; selected Lean gate and calibrated controls pass at the recorded revision. No workspace mutation endpoint exists in this slice.
+Exit: deterministic golden fixture plus real production-path checks, with the specified proofs and calibrated controls passing at the recorded revisions. An upstream fix for joint extraction is **not** an M1 dependency. A blocked leaf withholds its dependent guarantee; tests or the single-resource C02 spike cannot stand in for inventory-wide completeness. No workspace mutation endpoint exists in this slice.
 
 ## M2 — Make the interface cheaper to use
 
