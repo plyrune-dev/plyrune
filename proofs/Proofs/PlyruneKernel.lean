@@ -139,7 +139,9 @@ theorem admit_capture_spec (schema : capture.CaptureSchema) (kind : capture.Capt
         obtain ⟨ho, hi'⟩ := hv.mp rfl
         by_cases hr : a.resource = b.resource
         · simpa [ho, hi', hr] using Proofs.Snapshot.inspect_spec a.snapshot b.snapshot xs lo hi
-        · simp [ho, hi', hr, WP.spec_ok]
+        · have different : (a.resource : Std.U64).val ≠ (b.resource : Std.U64).val :=
+            fun eq => hr (UScalar.eq_of_val_eq eq)
+          simp [ho, hi', hr, different, WP.spec_ok]
     · simp [capture.admit_capture, capture.CaptureSchema.V1, capture.CaptureKind.TEXT, hs, hk]
   · simp [capture.admit_capture, capture.CaptureSchema.V1, hs]
 
