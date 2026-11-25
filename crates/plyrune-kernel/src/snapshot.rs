@@ -2,6 +2,7 @@
 use crate::range::{RangeRefusal, admit_text};
 
 /// The two halves of one 256-bit digest, in network byte order.
+#[derive(Clone, Copy)]
 pub struct SnapshotKey {
     high: u128,
     low: u128,

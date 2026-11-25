@@ -134,3 +134,47 @@ file = "crates/plyrune-kernel/src/snapshot.rs"
 before = " && expected.low == actual.low"
 after = ""
 direct = ["Proofs.Snapshot.inspect_spec"]
+
+[[claim]]
+crate = "plyrune-kernel"
+file = "crates/plyrune-kernel/src/capture.rs"
+function = "admit_capture"
+lean = "plyrune_kernel.capture.admit_capture"
+theorems = ["Proofs.Capture.admit_capture_spec"]
+total = "Proofs.Capture.admit_capture_spec"
+mutants = ["accept-unknown-schema", "accept-foreign-kind", "capture-self-store", "ignore-resource", "capture-self-snapshot"]
+
+[[mutant]]
+name = "accept-unknown-schema"
+file = "crates/plyrune-kernel/src/capture.rs"
+before = "schema.0 != CaptureSchema::V1.0"
+after = "schema.0 < CaptureSchema::V1.0"
+direct = ["Proofs.Capture.admit_capture_spec"]
+
+[[mutant]]
+name = "accept-foreign-kind"
+file = "crates/plyrune-kernel/src/capture.rs"
+before = "kind.0 != CaptureKind::TEXT.0"
+after = "kind.0 < CaptureKind::TEXT.0"
+direct = ["Proofs.Capture.admit_capture_spec"]
+
+[[mutant]]
+name = "capture-self-store"
+file = "crates/plyrune-kernel/src/capture.rs"
+before = "same_store(&presented.store, &actual.store)"
+after = "same_store(&presented.store, &presented.store)"
+direct = ["Proofs.Capture.admit_capture_spec"]
+
+[[mutant]]
+name = "ignore-resource"
+file = "crates/plyrune-kernel/src/capture.rs"
+before = "presented.resource.0 != actual.resource.0"
+after = "presented.resource.0 != presented.resource.0"
+direct = ["Proofs.Capture.admit_capture_spec"]
+
+[[mutant]]
+name = "capture-self-snapshot"
+file = "crates/plyrune-kernel/src/capture.rs"
+before = "inspect_range(&presented.snapshot, &actual.snapshot,"
+after = "inspect_range(&presented.snapshot, &presented.snapshot,"
+direct = ["Proofs.Capture.admit_capture_spec"]

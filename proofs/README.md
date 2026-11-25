@@ -18,6 +18,29 @@ trusted rather than proved.
 | `run.sh`, `compose.yaml`, `container.sh` | Run the gate in the pinned image from the host |
 | `extract.sh`, `refresh.sh` | Translate a crate; regenerate `Extracted/` |
 
+## Fixture capture decision (PR-C01)
+
+`Proofs.Capture.admit_capture_spec` specifies `capture::admit_capture` for
+every raw schema/kind value, pair of subjects, byte slice and pair of offsets.
+Success requires schema 1, text kind 1, matching owner/incarnation, the same
+resource ordinal and both matching snapshot digest halves, followed by an
+in-bounds half-open range with both ends on text boundaries. Failure names
+the first check that failed in that order. Empty ranges at boundaries are
+valid. The proof composes `same_store_spec` with `inspect_spec`; the older
+`store_range_spec` remains a separate, narrower claim.
+
+The capture claim has its own source controls: accepting unknown schema or
+kind, comparing a store or snapshot with itself, and ignoring the resource.
+The Rust controls include successful nonempty `é` and zero-width end ranges,
+and reject each foreign component without relying on different resource
+bytes. See `claims.json` for the gate outcome, not the theorem count.
+
+This decision does not look up resources, slice or return bytes. The fixture
+bridge must pair the resolved path's ordinal, canonical snapshot key and
+bytes from the same immutable entry; only prior UTF-8 validation makes
+continuation-byte tests character-boundary tests. Digest collision resistance,
+host ID issuance/non-reuse and read authority are outside the theorem.
+
 ## Workflow
 
 1. Pull the image (linux/amd64, about 20 GB):

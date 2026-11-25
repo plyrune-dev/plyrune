@@ -106,3 +106,41 @@ theorem inspect_spec (a b : snapshot.SnapshotKey) (xs : Slice Std.U8) (lo hi : S
     simpa using Proofs.Text.admit_text_spec xs lo hi
 
 end Proofs.Snapshot
+
+namespace Proofs.Capture
+
+/-- The v1 text profile is fixed, not selected by the presenter. Every
+identity component and both half-open byte boundaries must match before
+success. The caller supplies an authoritative subject/image pair; this
+theorem neither constructs a fixture nor connects a digest to its bytes. -/
+theorem admit_capture_spec (schema : capture.CaptureSchema) (kind : capture.CaptureKind)
+    (a b : capture.CaptureSubject) (xs : Slice Std.U8) (lo hi : capture.ByteOffset) :
+    capture.admit_capture schema kind a b xs lo hi ⦃ r => r =
+      if schema ≠ 1#u16 then core.result.Result.Err range.RangeRefusal.UnsupportedSchema
+      else if kind ≠ 1#u16 then core.result.Result.Err range.RangeRefusal.WrongKind
+      else if a.store.owner = b.store.owner ∧ a.store.incarnation = b.store.incarnation then
+        if a.resource = b.resource then
+          if a.snapshot.high = b.snapshot.high ∧ a.snapshot.low = b.snapshot.low then
+            if lo ≤ hi ∧ hi ≤ Slice.len xs then
+              if Proofs.Text.boundary xs lo && Proofs.Text.boundary xs hi then core.result.Result.Ok ()
+              else core.result.Result.Err range.RangeRefusal.NotCharBoundary
+            else core.result.Result.Err range.RangeRefusal.OutOfBounds
+          else core.result.Result.Err range.RangeRefusal.WrongSnapshot
+        else core.result.Result.Err range.RangeRefusal.WrongResource
+      else core.result.Result.Err range.RangeRefusal.WrongStore ⦄ := by
+  by_cases hs : schema = 1#u16
+  · by_cases hk : kind = 1#u16
+    · simp [capture.admit_capture, capture.CaptureSchema.V1, capture.CaptureKind.TEXT, hs, hk]
+      apply WP.spec_bind (Proofs.Binding.same_store_spec a.store b.store)
+      intro v hv
+      cases v with
+      | false => simp_all [WP.spec_ok]
+      | true =>
+        obtain ⟨ho, hi'⟩ := hv.mp rfl
+        by_cases hr : a.resource = b.resource
+        · simpa [ho, hi', hr] using Proofs.Snapshot.inspect_spec a.snapshot b.snapshot xs lo hi
+        · simp [ho, hi', hr, WP.spec_ok]
+    · simp [capture.admit_capture, capture.CaptureSchema.V1, capture.CaptureKind.TEXT, hs, hk]
+  · simp [capture.admit_capture, capture.CaptureSchema.V1, hs]
+
+end Proofs.Capture

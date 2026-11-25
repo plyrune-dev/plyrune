@@ -21,26 +21,26 @@ set_option maxRecDepth 2048
 namespace plyrune_kernel
 
 /-- [plyrune_kernel::binding::OwnerId]
-    Source: 'crates/plyrune-kernel/src/binding.rs', lines 4:0-4:24
+    Source: 'crates/plyrune-kernel/src/binding.rs', lines 5:0-5:24
     Visibility: public -/
 @[reducible]
 def binding.OwnerId := Std.U64
 
 /-- [plyrune_kernel::binding::IncarnationId]
-    Source: 'crates/plyrune-kernel/src/binding.rs', lines 7:0-7:30
+    Source: 'crates/plyrune-kernel/src/binding.rs', lines 9:0-9:30
     Visibility: public -/
 @[reducible]
 def binding.IncarnationId := Std.U64
 
 /-- [plyrune_kernel::binding::StoreBinding]
-    Source: 'crates/plyrune-kernel/src/binding.rs', lines 10:0-13:1
+    Source: 'crates/plyrune-kernel/src/binding.rs', lines 13:0-16:1
     Visibility: public -/
 structure binding.StoreBinding where
   owner : binding.OwnerId
   incarnation : binding.IncarnationId
 
 /-- [plyrune_kernel::binding::same_store]:
-    Source: 'crates/plyrune-kernel/src/binding.rs', lines 39:0-41:1
+    Source: 'crates/plyrune-kernel/src/binding.rs', lines 42:0-44:1
     Visibility: public -/
 def binding.same_store
   (expected : binding.StoreBinding) (presented : binding.StoreBinding) :
@@ -56,7 +56,7 @@ def binding.same_store
   else ok false
 
 /-- [plyrune_kernel::range::RangeRefusal]
-    Source: 'crates/plyrune-kernel/src/range.rs', lines 21:0-31:1
+    Source: 'crates/plyrune-kernel/src/range.rs', lines 21:0-37:1
     Visibility: public -/
 @[discriminant isize]
 inductive range.RangeRefusal where
@@ -64,9 +64,12 @@ inductive range.RangeRefusal where
 | NotCharBoundary : range.RangeRefusal
 | WrongStore : range.RangeRefusal
 | WrongSnapshot : range.RangeRefusal
+| UnsupportedSchema : range.RangeRefusal
+| WrongKind : range.RangeRefusal
+| WrongResource : range.RangeRefusal
 
 /-- [plyrune_kernel::range::admit]:
-    Source: 'crates/plyrune-kernel/src/range.rs', lines 60:0-66:1
+    Source: 'crates/plyrune-kernel/src/range.rs', lines 66:0-72:1
     Visibility: public -/
 def range.admit
   (len : Std.Usize) (start : Std.Usize) («end» : Std.Usize) :
@@ -80,7 +83,7 @@ def range.admit
     else ok (core.result.Result.Ok ())
 
 /-- [plyrune_kernel::range::is_continuation]:
-    Source: 'crates/plyrune-kernel/src/range.rs', lines 35:0-37:1
+    Source: 'crates/plyrune-kernel/src/range.rs', lines 41:0-43:1
     Visibility: public -/
 def range.is_continuation (byte : Std.U8) : Result Bool := do
   if byte >= 128#u8
@@ -88,7 +91,7 @@ def range.is_continuation (byte : Std.U8) : Result Bool := do
   else ok false
 
 /-- [plyrune_kernel::range::char_boundary]:
-    Source: 'crates/plyrune-kernel/src/range.rs', lines 45:0-50:1
+    Source: 'crates/plyrune-kernel/src/range.rs', lines 51:0-56:1
     Visibility: public -/
 def range.char_boundary
   (bytes : Slice Std.U8) («at» : Std.Usize) : Result Bool := do
@@ -102,7 +105,7 @@ def range.char_boundary
                  ok (¬ b)
 
 /-- [plyrune_kernel::range::admit_text]:
-    Source: 'crates/plyrune-kernel/src/range.rs', lines 76:0-86:1
+    Source: 'crates/plyrune-kernel/src/range.rs', lines 82:0-92:1
     Visibility: public -/
 def range.admit_text
   (bytes : Slice Std.U8) (start : Std.Usize) («end» : Std.Usize) :
@@ -135,15 +138,59 @@ def capture.admit_store_range
   then range.admit_text bytes start «end»
   else ok (core.result.Result.Err range.RangeRefusal.WrongStore)
 
+/-- [plyrune_kernel::capture::CaptureSchema]
+    Source: 'crates/plyrune-kernel/src/capture.rs', lines 28:0-28:30
+    Visibility: public -/
+@[reducible]
+def capture.CaptureSchema := Std.U16
+
+/-- [plyrune_kernel::capture::{plyrune_kernel::capture::CaptureSchema}::V1]
+    Source: 'crates/plyrune-kernel/src/capture.rs', lines 32:4-32:33
+    Visibility: public -/
+@[global_simps, irreducible]
+def capture.CaptureSchema.V1 : capture.CaptureSchema := 1#u16
+
+/-- [plyrune_kernel::capture::CaptureKind]
+    Source: 'crates/plyrune-kernel/src/capture.rs', lines 42:0-42:28
+    Visibility: public -/
+@[reducible]
+def capture.CaptureKind := Std.U16
+
+/-- [plyrune_kernel::capture::{plyrune_kernel::capture::CaptureKind}::TEXT]
+    Source: 'crates/plyrune-kernel/src/capture.rs', lines 46:4-46:35
+    Visibility: public -/
+@[global_simps, irreducible]
+def capture.CaptureKind.TEXT : capture.CaptureKind := 1#u16
+
+/-- [plyrune_kernel::capture::ResourceId]
+    Source: 'crates/plyrune-kernel/src/capture.rs', lines 56:0-56:27
+    Visibility: public -/
+@[reducible]
+def capture.ResourceId := Std.U64
+
+/-- [plyrune_kernel::capture::ByteOffset]
+    Source: 'crates/plyrune-kernel/src/capture.rs', lines 67:0-67:29
+    Visibility: public -/
+@[reducible]
+def capture.ByteOffset := Std.Usize
+
 /-- [plyrune_kernel::snapshot::SnapshotKey]
-    Source: 'crates/plyrune-kernel/src/snapshot.rs', lines 5:0-8:1
+    Source: 'crates/plyrune-kernel/src/snapshot.rs', lines 6:0-9:1
     Visibility: public -/
 structure snapshot.SnapshotKey where
   high : Std.U128
   low : Std.U128
 
+/-- [plyrune_kernel::capture::CaptureSubject]
+    Source: 'crates/plyrune-kernel/src/capture.rs', lines 84:0-88:1
+    Visibility: public -/
+structure capture.CaptureSubject where
+  store : binding.StoreBinding
+  resource : capture.ResourceId
+  snapshot : snapshot.SnapshotKey
+
 /-- [plyrune_kernel::snapshot::inspect_range]:
-    Source: 'crates/plyrune-kernel/src/snapshot.rs', lines 22:0-34:1
+    Source: 'crates/plyrune-kernel/src/snapshot.rs', lines 23:0-35:1
     Visibility: public -/
 def snapshot.inspect_range
   (expected : snapshot.SnapshotKey) (actual : snapshot.SnapshotKey)
@@ -156,5 +203,35 @@ def snapshot.inspect_range
     then range.admit_text bytes start «end»
     else ok (core.result.Result.Err range.RangeRefusal.WrongSnapshot)
   else ok (core.result.Result.Err range.RangeRefusal.WrongSnapshot)
+
+/-- [plyrune_kernel::capture::admit_capture]:
+    Source: 'crates/plyrune-kernel/src/capture.rs', lines 110:0-132:1
+    Visibility: public -/
+def capture.admit_capture
+  (schema : capture.CaptureSchema) (kind : capture.CaptureKind)
+  (presented : capture.CaptureSubject) (actual : capture.CaptureSubject)
+  (bytes : Slice Std.U8) (start : capture.ByteOffset)
+  («end» : capture.ByteOffset) :
+  Result (core.result.Result Unit range.RangeRefusal)
+  := do
+  let i := capture.CaptureSchema.V1
+  if schema != i
+  then ok (core.result.Result.Err range.RangeRefusal.UnsupportedSchema)
+  else
+    let i1 := capture.CaptureKind.TEXT
+    if kind != i1
+    then ok (core.result.Result.Err range.RangeRefusal.WrongKind)
+    else
+      let b ← binding.same_store presented.store actual.store
+      if b
+      then
+        let i2 := presented.resource
+        let i3 := actual.resource
+        if i2 != i3
+        then ok (core.result.Result.Err range.RangeRefusal.WrongResource)
+        else
+          snapshot.inspect_range presented.snapshot actual.snapshot bytes start
+            «end»
+      else ok (core.result.Result.Err range.RangeRefusal.WrongStore)
 
 end plyrune_kernel

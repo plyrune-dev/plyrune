@@ -26,8 +26,14 @@ pub enum RangeRefusal {
     NotCharBoundary,
     /// The store-bound caller presented a different owner or incarnation.
     WrongStore,
-    /// The stateless fixture request names a different snapshot.
+    /// The request names a different snapshot.
     WrongSnapshot,
+    /// The capture does not use the supported schema.
+    UnsupportedSchema,
+    /// The artifact is not a text capture.
+    WrongKind,
+    /// Another resource was requested, even if it contains identical bytes.
+    WrongResource,
 }
 
 /// Whether `byte` continues the UTF-8 character before it (`10xxxxxx`).

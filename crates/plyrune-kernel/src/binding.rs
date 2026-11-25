@@ -1,12 +1,15 @@
 //! Store-local provenance. Comparison does not establish permission to read.
 
 /// Identity assigned to a source owner by the host.
+#[derive(Clone, Copy)]
 pub struct OwnerId(u64);
 
 /// Identity assigned to one lifetime of the owner's artifact store.
+#[derive(Clone, Copy)]
 pub struct IncarnationId(u64);
 
 /// A host-supplied pair; neither component is an authorization token.
+#[derive(Clone, Copy)]
 pub struct StoreBinding {
     owner: OwnerId,
     incarnation: IncarnationId,

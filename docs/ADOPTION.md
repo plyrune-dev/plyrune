@@ -19,6 +19,74 @@ The pure kernel has no dependencies. Core hashes with `sha2`; the edge
 decodes untrusted JSON with `serde` (derive) and `serde_json`. `Cargo.lock`
 pins their closure. There are no lint exceptions or legacy baseline.
 
+## Reproduce the adoption baseline (#2)
+
+On 25 November a fresh public clone at `4e1ec3b17d7c4b65829e9ec6219ceb1b8655e1ff` passed the committed Compose fast gate and the separate full proof gate (six claims, nine mutants). In the probe workspace, the locked release build, Tauten check and five-resource candidate comparison passed. The pinned tools image built with cached layers; these runs reused local Docker volumes, not a cold or offline bootstrap. Historical cross-workspace extraction failure and independent upstream proof remain separately classified below.
+
+Use a normal Git clone with its own `.git` directory: the fast gate archives
+the selected commit and the proof service clones it again. A copied worktree
+with a `.git` pointer to an unmounted directory is not equivalent. From the
+repository root, the following selects **committed HEAD**; for a published
+revision, clone `https://github.com/plyrune-dev/plyrune.git` instead of `.`
+and set `rev` to its full commit hash.
+
+```sh
+set -eu
+rev=$(git rev-parse HEAD)
+out=$(mktemp -d)
+git clone --no-local --no-checkout . "$out/plyrune"
+git -C "$out/plyrune" checkout --detach "$rev"
+cd "$out/plyrune"
+export COMPOSE_PROJECT_NAME=plyrune-baseline-$$
+printf 'Source: %s\nEvidence directory: %s\n' "$rev" "$out"
+docker compose build tools
+docker compose run --rm -T gate
+docker compose run --rm -T proofs > "$out/claims.json"
+docker compose run --rm -T dev sh -ec '
+  cd qualification/splice-probe
+  cargo +1.98.0 build --release --locked
+  cargo +1.98.0 tauten check --format json
+  python3 check.py
+'
+```
+
+The last three commands inside `dev` are in the probe's **own workspace**;
+the product gate does not build its Git dependency. The driver uses the
+container's `CARGO_TARGET_DIR` and compares all five resulting resource rows
+against `examples/expected-candidate.json`. Record the commit, gate outcomes
+and emitted proof record separately from this procedure. A clean clone and
+separate project volumes do not imply an uncached Docker image build.
+
+Run the cross-crate extraction experiment **separately**. Its historical
+failure is specific to omitted workspace lints, not any nonzero exit:
+
+```sh
+if docker compose run --rm -T dev sh qualification/splice-probe/extract.sh \
+    > "$out/extract.log" 2>&1; then
+  echo 'Extraction succeeded; review the changed evidence boundary.' >&2
+  exit 1
+else
+  cat "$out/extract.log" >&2
+  grep -F 'workspace.lints' "$out/extract.log"
+fi
+```
+
+An access, fetch or toolchain error is not a reproduction of that result.
+For the independent upstream leaf proof, run
+`sh qualification/splice-probe/native-proof.sh` on the **host**, from
+the same checkout. It fetches the pinned public Splicery revision and
+starts its own Compose service; it does not translate the consumer.
+After collecting evidence, `docker compose down --volumes` removes this
+baseline project's volumes, not the saved records in `$out`.
+
+The clean path uses Linux/amd64, Git, Docker with Compose/BuildKit, disk
+space for the proofs image (about 20 GB unpacked) plus build outputs, and
+network access to public GitHub, GHCR, the Rust toolchain and package
+registries and the image's OS package mirrors. It is not an offline or
+byte-for-byte hermetic image build. No private checkout, GitHub token or
+host Cargo is a prescribed input. See [the pinned source inventory](../SOURCES.md)
+for the licenses, translation roots and private design-only sources.
+
 ## What would make the proposal give a wrong answer?
 
 * **Binding two paths by blob alone:** Splicery compares a 32-byte original

@@ -1,30 +1,33 @@
 # Sources and inspection record
 
-Prepared 23 November 2026. Exact revisions are recorded in `source-pins.json`. Repository content was read through the connected GitHub service. This is source inspection, not a rerun of the repositories' build/proof gates.
+## Pinned source inventory · 25 November 2026
 
-## Engineering and Tauten
+[The five Git revisions](source-pins.json) identify inputs with **different roles**. The preview binary is built from the Plyrune workspace and its [Cargo lockfile](Cargo.lock); none of the five repositories is a linked runtime dependency. Only Tauten is needed to construct the standard tools image. Splicery is fetched by a separate qualification probe. A fresh public checkout needs neither private repository, an upstream working tree, nor access to historical transcripts.
 
-- [Playbook](https://github.com/tknawara/playbook/tree/cca8e068d0843af5612522049f08d8d645252f7c), private: README, catalog, AGENTS, architecture, types/boundaries, verification, quality gates and review/evolution. Adapted as a project-specific profile; the playbook is not redistributed wholesale.
-- [Tauten](https://github.com/tauten-dev/tauten/tree/bac9fdd1f4f2390f8c7fe2d95a6bc878e6149f42): README, AGENTS, Cargo manifests, ADOPTING, STATUS, MAPPING, proof README, agent profile, ROADMAP, accepted five-primitives RFC, origin.rs, lib.rs, macro source and behavior tests.
-- [Stamp carrier](https://github.com/tauten-dev/tauten/blob/bac9fdd1f4f2390f8c7fe2d95a6bc878e6149f42/crates/tauten/src/origin.rs#L194-L258) and [generated minting](https://github.com/tauten-dev/tauten/blob/bac9fdd1f4f2390f8c7fe2d95a6bc878e6149f42/crates/tauten-macros/src/lib.rs#L610-L623): source-level wrong-subject finding, independently reviewed.
-- [Existing stamp fixture](https://github.com/tauten-dev/tauten/blob/bac9fdd1f4f2390f8c7fe2d95a6bc878e6149f42/crates/tauten/tests/behaviour.rs#L140-L202): basis for the proposed regression test.
-- Tauten open/related issue bodies were checked before drafting. Relevant links are in `docs/TAUTEN.md`; #9 is the originating completed carrier feature and #30 is the parked/rejected register.
+| Pin (license evidence at that revision) | What Plyrune uses | Where the evidence stops |
+|---|---|---|
+| **Tauten** `bac9fdd` · public · [MIT license](https://github.com/tauten-dev/tauten/blob/bac9fdd1f4f2390f8c7fe2d95a6bc878e6149f42/LICENSE) | [Dockerfile](docker/Dockerfile) installs `cargo-tauten --locked` from this revision in the digest-pinned proofs image. The generated agent profile, adapted proof template and container setup are development inputs; the upstream notice is retained at [proofs/LICENSE.tauten](proofs/LICENSE.tauten). | Tauten's [upstream proof roots](https://github.com/tauten-dev/tauten/blob/bac9fdd1f4f2390f8c7fe2d95a6bc878e6149f42/proofs/claims.toml) are `tauten-check-kernel` and `tauten-proof-instances`, not Plyrune. A structural check or a proof for a listed macro instance is not a proof of a downstream binding. |
+| **Splicery** `632a90f` · public · [MIT license, Writfold authors](https://github.com/writfold-dev/splicery/blob/632a90fd96e920fbac7ee5818f989739c1617062/LICENSE) | Only the [standalone probe and its own lockfile](qualification/splice-probe/) depend on `splicery-splice`. The fixture driver checks bytes and metadata after `prepare`/`render`; the probe's fixed local token is **not** a resource identity. | The [native proof](https://github.com/writfold-dev/splicery/blob/632a90fd96e920fbac7ee5818f989739c1617062/proofs/README.md) translates `splicery_splice::splice`; domain-to-cut conversion and text-candidate validation lie outside it. The failed downstream extraction does not qualify the bridge. Retain Splicery's own notice if distributing its code or substantial portions. |
+| **Weft** `118c1bf` · public · [MIT license](https://github.com/writfold-dev/weft/blob/118c1bf3de82002e3070267a54f28eedaa1ad678/LICENSE) | Design comparison for sets, trace verdicts and reuse; no release, gate or probe dependency. | Its [shipped-code assurance](https://github.com/writfold-dev/weft/blob/118c1bf3de82002e3070267a54f28eedaa1ad678/docs/runtime-assurance.md) covers roots `weft_core::{sets,verdict,scope}`, not the production of every trace row, choice/encoding of reuse fields or Plyrune's matcher. No Weft translation is imported. |
+| **Engineering playbook** `cca8e06` · private · [pinned tree, access required](https://github.com/tknawara/playbook/tree/cca8e068d0843af5612522049f08d8d645252f7c) | Design provenance for the project-specific engineering profile. No checkout, code or translation root in any build. | No repository-level license file was found in the pinned tree. A bundled font notice applies to fonts, not the playbook. Do not infer a redistribution grant for the text. |
+| **Tuft / Writfold archive** `c79f2df` · private · [root MIT license, access required](https://github.com/writfold-dev/writfold-archive/blob/c79f2dfca763d9b0eba6031d3f0437bda75b08ca/LICENSE) | Historical architecture and [projection pilot 2](https://github.com/writfold-dev/writfold-archive/tree/c79f2dfca763d9b0eba6031d3f0437bda75b08ca/public-split-2026-11-16/bench/2026-11-10-projection-pilot-2) context, not a Tuft product, dependency, translation root or Plyrune measurement. | The root grant and nested third-party notices do not make a private repository public or authorize release of private transcripts/data. Reproduction does not fetch or copy the archive. |
 
-## Existing engines
+License findings above are from pinned files and tree listings, not GitHub's current license badge. Private entries were inspected with read access; only their provenance and license findings are recorded here. This is not a license inventory for every package in the compiler image or the Cargo dependency graph; third-party components retain their own terms.
 
-- [Splicery README](https://github.com/writfold-dev/splicery/blob/632a90fd96e920fbac7ee5818f989739c1617062/README.md): production splice proof boundary, exact limits, candidate-only CLI and tested mappings. Historical Writfold owner descriptions are not treated as current Plyrune authority.
-- [Weft README](https://github.com/writfold-dev/weft/blob/118c1bf3de82002e3070267a54f28eedaa1ad678/README.md): finite-set/trace/reuse kernels, local development status and unproved whole-program/integration boundaries.
-- [Tuft archive](https://github.com/writfold-dev/writfold-archive/tree/c79f2dfca763d9b0eba6031d3f0437bda75b08ca/public-split-2026-11-16), private: historical architecture and measurement context. Not a current independently shipped Tuft 2.0 product.
-- [Projection pilot 2](https://github.com/writfold-dev/writfold-archive/blob/c79f2dfca763d9b0eba6031d3f0437bda75b08ca/public-split-2026-11-16/bench/2026-11-10-projection-pilot-2/README.md): exact historical figures and limitations cited in the evaluation plan. No transcripts or raw private source are included in public website assets.
+### Translation and release boundary
+
+For [preview 1's kernel manifest](https://github.com/plyrune-dev/plyrune/blob/3a74b0f9016074c01a81094e655bdf8786a0eb5d/crates/plyrune-kernel/Cargo.toml), Charon starts from `capture::admit_store_range` and `snapshot::inspect_range` in `plyrune-kernel`, not from a CLI entrypoint. For another checkout, take its roots from [`package.metadata.charon.start_from`](crates/plyrune-kernel/Cargo.toml) and its Rust-function → theorem → mutant mapping from [proofs/claims.toml](proofs/claims.toml). The gate compares the regenerated translation against [proofs/Extracted](proofs/Extracted/). A change on `main` does not extend the released binary's proof record.
+
+The claims concern selected functions on supplied values. Fixture decoding, acquisition, canonical snapshot hashing, path lookup and CLI framing are tested bridges, not Lean theorems. Compiler correspondence, translation/library models, Lean's kernel and the gate scripts are part of the [trust base](proofs/TRUST.md). The separate [matcher experiment](qualification/matcher-spike/) is not a release translation root.
+
+### Handover inspection (23 November 2026)
+
+The [Tauten stamp carrier](https://github.com/tauten-dev/tauten/blob/bac9fdd1f4f2390f8c7fe2d95a6bc878e6149f42/crates/tauten/src/origin.rs#L194-L258), [generated minting](https://github.com/tauten-dev/tauten/blob/bac9fdd1f4f2390f8c7fe2d95a6bc878e6149f42/crates/tauten-macros/src/lib.rs#L610-L623) and [stamp fixture](https://github.com/tauten-dev/tauten/blob/bac9fdd1f4f2390f8c7fe2d95a6bc878e6149f42/crates/tauten/tests/behaviour.rs#L140-L202) were the basis for the wrong-subject finding. See [docs/TAUTEN.md](docs/TAUTEN.md) for the adoption decision and [upstream issue status](issues/STATUS.md) for both filed topics.
 
 ## Naming
 
 The preceding naming exploration checked exact repository/package names and authoritative domain records on 23 November 2026. The `.dev` check used `pubapi.registry.google/rdap/domain/plyrune.dev`; `.com` used `rdap.verisign.com/com/v1/domain/plyrune.com`. No domain record was returned in those checks. Exact npm/crates.io/PyPI package checks returned no package; repository-name searches found no exact match. These are transient availability observations, not reservations or trademark clearance.
 
-## Evidence boundaries
+## Execution records
 
-- Design review and source inspection were performed.
-- The local handover/fixture checks and PDF visual review are recorded in `VALIDATION.md` after execution.
-- The images are generated design concepts, not live product screenshots.
-- No Rust/Lean/product benchmark execution or website deployment was performed.
-- Tauten issue creation was attempted and blocked; see `issues/STATUS.md`.
+[VALIDATION.md](VALIDATION.md) records the original handover and fixture checks. That inspection did not run Rust or Lean; images in the handover were generated design concepts. Later product, proof and delivery records and the clean-checkout reproduction procedure are in [docs/ADOPTION.md](docs/ADOPTION.md). Inspecting a pinned tree is not a fresh run of its gates.

@@ -8,4 +8,4 @@ Start with a [GitHub issue](https://github.com/plyrune-dev/plyrune/issues). Repo
 
 **Delivery:** link the issue in the change. Run the applicable Docker gates in [README.md](README.md), attach the commit, evidence and remaining limits, then close the scoped issue. For a user-visible or assurance change, add a dated note to [the changelog](website/changelog.html) in the same change. Say whether it is available from source, live on Pages, or a tagged release. Publish only the staged allowlist and compare the live page with those bytes. Editorial changes need no product release.
 
-Use the [current milestone](https://github.com/plyrune-dev/plyrune/milestone/7) for sequencing. Production semantic decisions must clear the selected proof gate before being exposed through an adapter. Native controls and adapter smoke tests do not discharge kernel claims.
+Use the [open milestones](https://github.com/plyrune-dev/plyrune/milestones) for sequencing. Production semantic decisions must clear the selected proof gate before being exposed through an adapter. Native controls and adapter smoke tests do not discharge kernel claims.
