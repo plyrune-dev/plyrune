@@ -26,6 +26,10 @@ pub enum Refusal {
     Splice(splicery_splice::Refusal),
     /// A coordinate, digest frame or encoding could not be represented.
     Representation,
+    /// The candidate is not UTF-8; identifies the invalid offset.
+    Encoding(std::str::Utf8Error),
+    /// A length does not fit the canonical 64-bit frame.
+    Length(std::num::TryFromIntError),
     /// Missing, extra, reordered, renamed or nonregular candidate resource.
     Inventory,
     /// Actual bytes or selected ranges disagreed with the original source and task.
@@ -223,11 +227,11 @@ fn render(
     }
     let order = splicery_splice::prepare(source, true, &image, &edits).map_err(Refusal::Splice)?;
     let output = splicery_splice::render(source, &edits, &order).map_err(Refusal::Splice)?;
-    String::from_utf8(output.bytes).map_err(|_| Refusal::Representation)
+    String::from_utf8(output.bytes).map_err(|e| Refusal::Encoding(e.utf8_error()))
 }
 
 fn frame(hash: &mut Sha256, bytes: &[u8]) -> Result<(), Refusal> {
-    let length = u64::try_from(bytes.len()).map_err(|_| Refusal::Representation)?;
+    let length = u64::try_from(bytes.len()).map_err(Refusal::Length)?;
     hash.update(length.to_be_bytes());
     hash.update(bytes);
     Ok(())
@@ -300,7 +304,7 @@ fn check_rows<'b>(
     frame(&mut candidate, b"plyrune/candidate/fixture/v1")?;
     candidate.update(
         u64::try_from(base.len())
-            .map_err(|_| Refusal::Representation)?
+            .map_err(Refusal::Length)?
             .to_be_bytes(),
     );
     let mut selected = selection.rows().iter();
@@ -425,7 +429,7 @@ pub fn check_candidate<'a>(
     let rows = candidate
         .iter()
         .map(|entry| {
-            let text = std::str::from_utf8(entry.bytes).map_err(|_| Refusal::Representation)?;
+            let text = std::str::from_utf8(entry.bytes).map_err(Refusal::Encoding)?;
             Ok((entry.path, Cow::Borrowed(text)))
         })
         .collect::<Result<_, _>>()?;

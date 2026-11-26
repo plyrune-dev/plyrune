@@ -67,6 +67,12 @@ Effort: initial agent investigation and authoring, approximately 0.1 wall-clock 
 
 **Executed result:** the native baseline and mutant controls passed, and Charon/Aeneas generated `MatcherSpike.lean` (SHA-256 `80e4ca9ce7bcf3ed446c3e2b720719a66b287d3426754665b98bb49c419d05c9`). The first two attempts stopped at Lean build: the branch tactic split the nested first-hit branch too early (22.6 s), then the decreasing-cursor goal remained open (12.0 s). With the same Rust, statement and control, explicit branch selection and a natural-number arithmetic step closed the proof. The final run (45.0 s) passed build, audit and direct mutant calibration: `skip-initial-match` broke `Spike.scan_spec`. Proceed to the inventory witness obligation in [#5](https://github.com/plyrune-dev/plyrune/issues/5); do not count the experiment as a seventh claim in the preview.
 
+### Fixed replacement: composition and its limits
+
+The [replacement theorem module](../proofs/Proofs/Replacement.lean) states two different kinds of result. `lower_cut_spec` is about a production Rust function: a capture on the wrong subject refuses; an admitted capture yields its original byte endpoints. `consume_spec`, `finished_spec` and `same_bytes_spec` characterize the extracted byte and length decisions. `checkManifest_spec` composes them in **Lean**: for independently supplied rows, gaps, fixed replacement and tails, acceptance is equivalent to equality of all ordered paths and output bytes. This is not a translation of the whole Rust traversal or of a filesystem operation.
+
+The [Rust consumer](../crates/plyrune-core/tests/reviewed_replacement.rs) exercises the remaining bridge: selection to source cuts, Splicery's returned prepare order to render, untouched and out-of-scope bytes, forged rows, scope narrowing, budgets, replay and identical replacements. `check_candidate` accepts arbitrary candidate rows separately from the caller's base and task; it does not ask a candidate which requirement to enforce. The fixture CLI verifies its complete generated candidate; it does not issue a portable host-approved report. A scoped directory input is not an inventory of the whole filesystem. Neither a successful check nor a matching review ID is permission to write.
+
 ### External bridges
 
 | Bridge/assumption | Initial treatment | What it does not establish |

@@ -15,13 +15,19 @@ pub(super) fn bind(fixture: Fixture<'_>) -> BoundFixture<'_> {
 }
 
 pub(super) fn digits(digest: &[u8; 32]) -> String {
-    const HEX: &[u8; 16] = b"0123456789abcdef";
-    let mut s = String::with_capacity(64);
-    for &b in digest {
-        s.push(char::from(HEX[usize::from(b >> 4)]));
-        s.push(char::from(HEX[usize::from(b & 15)]));
+    let mut out = String::with_capacity(64);
+    for n in digest.iter().flat_map(|b| [b >> 4, b & 15]) {
+        out.push(match n {
+            10 => 'a',
+            11 => 'b',
+            12 => 'c',
+            13 => 'd',
+            14 => 'e',
+            15 => 'f',
+            decimal => char::from(b'0' | decimal),
+        });
     }
-    s
+    out
 }
 
 #[derive(Serialize)]

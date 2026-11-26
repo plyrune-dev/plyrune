@@ -18,7 +18,7 @@
       ],
       "outcome": "proved",
       "badge": "proved",
-      "fingerprint": "fnv1a64:f9215259e1b2521c",
+      "fingerprint": "fnv1a64:3af64ac4508cf76b",
       "inputs": {
         "lean:binding.IncarnationId": "fnv1a64:a6a275ffb90951c4",
         "lean:binding.OwnerId": "fnv1a64:d24063bf5fe6730a",
@@ -80,7 +80,7 @@
       ],
       "outcome": "proved",
       "badge": "proved",
-      "fingerprint": "fnv1a64:f9215259e1b2521c",
+      "fingerprint": "fnv1a64:3af64ac4508cf76b",
       "inputs": {
         "lean:range.RangeRefusal": "fnv1a64:43a13e2d08e0b115",
         "lean:range.admit": "fnv1a64:074bddc930b5303a",
@@ -147,7 +147,7 @@
       ],
       "outcome": "proved",
       "badge": "proved",
-      "fingerprint": "fnv1a64:f9215259e1b2521c",
+      "fingerprint": "fnv1a64:3af64ac4508cf76b",
       "inputs": {
         "lean:range.char_boundary": "fnv1a64:9b28bdac2000b248",
         "lean:range.is_continuation": "fnv1a64:ae9403ad37b664a8",
@@ -193,7 +193,7 @@
       ],
       "outcome": "proved",
       "badge": "proved",
-      "fingerprint": "fnv1a64:f9215259e1b2521c",
+      "fingerprint": "fnv1a64:3af64ac4508cf76b",
       "inputs": {
         "lean:range.RangeRefusal": "fnv1a64:43a13e2d08e0b115",
         "lean:range.admit": "fnv1a64:074bddc930b5303a",
@@ -240,7 +240,7 @@
       ],
       "outcome": "proved",
       "badge": "proved",
-      "fingerprint": "fnv1a64:f9215259e1b2521c",
+      "fingerprint": "fnv1a64:3af64ac4508cf76b",
       "inputs": {
         "lean:binding.IncarnationId": "fnv1a64:a6a275ffb90951c4",
         "lean:binding.OwnerId": "fnv1a64:d24063bf5fe6730a",
@@ -285,7 +285,7 @@
       ],
       "outcome": "proved",
       "badge": "proved",
-      "fingerprint": "fnv1a64:f9215259e1b2521c",
+      "fingerprint": "fnv1a64:3af64ac4508cf76b",
       "inputs": {
         "lean:range.RangeRefusal": "fnv1a64:43a13e2d08e0b115",
         "lean:range.admit": "fnv1a64:074bddc930b5303a",
@@ -349,7 +349,7 @@
       ],
       "outcome": "proved",
       "badge": "proved",
-      "fingerprint": "fnv1a64:f9215259e1b2521c",
+      "fingerprint": "fnv1a64:3af64ac4508cf76b",
       "inputs": {
         "lean:binding.IncarnationId": "fnv1a64:a6a275ffb90951c4",
         "lean:binding.OwnerId": "fnv1a64:d24063bf5fe6730a",
@@ -449,7 +449,7 @@
       ],
       "outcome": "proved",
       "badge": "proved",
-      "fingerprint": "fnv1a64:f9215259e1b2521c",
+      "fingerprint": "fnv1a64:3af64ac4508cf76b",
       "inputs": {
         "lean:literal.matches_at": "fnv1a64:85c60ab43d0254ab",
         "lean:literal.matches_at_loop": "fnv1a64:640c3ccbe4050aa0",
@@ -492,7 +492,7 @@
       ],
       "outcome": "proved",
       "badge": "proved",
-      "fingerprint": "fnv1a64:f9215259e1b2521c",
+      "fingerprint": "fnv1a64:3af64ac4508cf76b",
       "inputs": {
         "lean:literal.first_match": "fnv1a64:f5c90583976a2b1e",
         "lean:literal.first_match_loop": "fnv1a64:81d723dc6d3f6cf4",
@@ -535,7 +535,7 @@
       ],
       "outcome": "proved",
       "badge": "proved",
-      "fingerprint": "fnv1a64:f9215259e1b2521c",
+      "fingerprint": "fnv1a64:3af64ac4508cf76b",
       "inputs": {
         "lean:literal.inventory_matches": "fnv1a64:1450da4040e69df2",
         "lean:literal.inventory_matches_loop": "fnv1a64:0f45d9d36aa5908d",
@@ -556,7 +556,222 @@
           ]
         }
       ]
+    },
+    {
+      "crate": "plyrune-kernel",
+      "file": "crates/plyrune-kernel/src/replacement.rs",
+      "function": "lower_cut",
+      "lean": "plyrune_kernel.replacement.lower_cut",
+      "theorems": [
+        "Proofs.Replacement.lower_cut_spec"
+      ],
+      "total": "Proofs.Replacement.lower_cut_spec",
+      "subsumes": [],
+      "mutants": [
+        "lower-foreign-capture",
+        "lower-wrong-end"
+      ],
+      "outcome": "proved",
+      "badge": "proved",
+      "fingerprint": "fnv1a64:3af64ac4508cf76b",
+      "inputs": {
+        "lean:binding.IncarnationId": "fnv1a64:a6a275ffb90951c4",
+        "lean:binding.OwnerId": "fnv1a64:d24063bf5fe6730a",
+        "lean:binding.StoreBinding": "fnv1a64:967184e3e43d0d5a",
+        "lean:binding.same_store": "fnv1a64:a2ef229ee3180126",
+        "lean:capture.ByteOffset": "fnv1a64:e49424ad5e23cd76",
+        "lean:capture.ByteOffset.get": "fnv1a64:e9ab048ce4f88b9e",
+        "lean:capture.CaptureKind": "fnv1a64:636c56c693cc0925",
+        "lean:capture.CaptureKind.TEXT": "fnv1a64:927bdc2e4def3527",
+        "lean:capture.CaptureSchema": "fnv1a64:6b34248b01f74817",
+        "lean:capture.CaptureSchema.V1": "fnv1a64:c6da3dc98cf93eb6",
+        "lean:capture.CaptureSubject": "fnv1a64:1dabbacde9137fdd",
+        "lean:capture.ResourceId": "fnv1a64:b78f25d8e8b63cc9",
+        "lean:capture.admit_capture": "fnv1a64:bbd38fb378f12b4e",
+        "lean:range.RangeRefusal": "fnv1a64:43a13e2d08e0b115",
+        "lean:range.admit": "fnv1a64:074bddc930b5303a",
+        "lean:range.admit_text": "fnv1a64:d51b2cd7793d9fae",
+        "lean:range.char_boundary": "fnv1a64:9b28bdac2000b248",
+        "lean:range.is_continuation": "fnv1a64:ae9403ad37b664a8",
+        "lean:replacement.lower_cut": "fnv1a64:3930776e5528fa5e",
+        "lean:snapshot.SnapshotKey": "fnv1a64:e6c9e11bcd59a8b7",
+        "lean:snapshot.inspect_range": "fnv1a64:bf68aee9465d506e",
+        "mutant:lower-foreign-capture": "fnv1a64:cf2dbb0c591e528a",
+        "mutant:lower-wrong-end": "fnv1a64:fb38fef851900466",
+        "proof:Proofs/Literal.lean": "fnv1a64:9feedd515c59070e",
+        "proof:Proofs/PlyruneKernel.lean": "fnv1a64:b7b48c2ed1b2de23",
+        "proof:Proofs/Replacement.lean": "fnv1a64:0343e252a95d3165",
+        "toolchain": "fnv1a64:bb9e124c5c1e30bd"
+      },
+      "mutant_results": [
+        {
+          "mutant": "lower-foreign-capture",
+          "status": "killed",
+          "broken": [
+            "Proofs.Replacement.lower_cut_spec"
+          ],
+          "direct": [
+            "Proofs.Replacement.lower_cut_spec"
+          ]
+        },
+        {
+          "mutant": "lower-wrong-end",
+          "status": "killed",
+          "broken": [
+            "Proofs.Replacement.lower_cut_spec"
+          ],
+          "direct": [
+            "Proofs.Replacement.lower_cut_spec"
+          ]
+        }
+      ]
+    },
+    {
+      "crate": "plyrune-kernel",
+      "file": "crates/plyrune-kernel/src/replacement.rs",
+      "function": "consume",
+      "lean": "plyrune_kernel.replacement.consume",
+      "theorems": [
+        "Proofs.Replacement.consume_spec",
+        "Proofs.Replacement.checkTerms_spec",
+        "Proofs.Replacement.checkManifest_spec"
+      ],
+      "total": "Proofs.Replacement.consume_spec",
+      "subsumes": [
+        "TAU-N001"
+      ],
+      "mutants": [
+        "accept-altered-term"
+      ],
+      "outcome": "proved",
+      "badge": "proved",
+      "fingerprint": "fnv1a64:3af64ac4508cf76b",
+      "inputs": {
+        "lean:literal.matches_at": "fnv1a64:85c60ab43d0254ab",
+        "lean:literal.matches_at_loop": "fnv1a64:640c3ccbe4050aa0",
+        "lean:literal.matches_at_loop.body": "fnv1a64:f48d96df8d974f1f",
+        "lean:replacement.consume": "fnv1a64:d11605ecaa1dfc65",
+        "mutant:accept-altered-term": "fnv1a64:9af37e5c39df0219",
+        "proof:Proofs/Literal.lean": "fnv1a64:9feedd515c59070e",
+        "proof:Proofs/PlyruneKernel.lean": "fnv1a64:b7b48c2ed1b2de23",
+        "proof:Proofs/Replacement.lean": "fnv1a64:0343e252a95d3165",
+        "toolchain": "fnv1a64:bb9e124c5c1e30bd"
+      },
+      "mutant_results": [
+        {
+          "mutant": "accept-altered-term",
+          "status": "killed",
+          "broken": [
+            "Proofs.Replacement.checkManifest_spec",
+            "Proofs.Replacement.checkTerms_spec",
+            "Proofs.Replacement.consume_spec"
+          ],
+          "direct": [
+            "Proofs.Replacement.consume_spec"
+          ],
+          "dependent": [
+            "Proofs.Replacement.checkManifest_spec",
+            "Proofs.Replacement.checkTerms_spec",
+            "Proofs.Replacement.no_hit_accepts",
+            "Proofs.Replacement.one_cut_accepts",
+            "Proofs.Replacement.one_cut_refuses_altered"
+          ]
+        }
+      ]
+    },
+    {
+      "crate": "plyrune-kernel",
+      "file": "crates/plyrune-kernel/src/replacement.rs",
+      "function": "finished",
+      "lean": "plyrune_kernel.replacement.finished",
+      "theorems": [
+        "Proofs.Replacement.finished_spec"
+      ],
+      "total": "Proofs.Replacement.finished_spec",
+      "subsumes": [],
+      "mutants": [
+        "accept-extra-edits"
+      ],
+      "outcome": "proved",
+      "badge": "proved",
+      "fingerprint": "fnv1a64:3af64ac4508cf76b",
+      "inputs": {
+        "lean:replacement.finished": "fnv1a64:9a34b999bb54ecbb",
+        "mutant:accept-extra-edits": "fnv1a64:381cd8f901153cf6",
+        "proof:Proofs/Literal.lean": "fnv1a64:9feedd515c59070e",
+        "proof:Proofs/PlyruneKernel.lean": "fnv1a64:b7b48c2ed1b2de23",
+        "proof:Proofs/Replacement.lean": "fnv1a64:0343e252a95d3165",
+        "toolchain": "fnv1a64:bb9e124c5c1e30bd"
+      },
+      "mutant_results": [
+        {
+          "mutant": "accept-extra-edits",
+          "status": "killed",
+          "broken": [
+            "Proofs.Replacement.checkManifest_spec",
+            "Proofs.Replacement.checkTerms_spec",
+            "Proofs.Replacement.finished_spec"
+          ],
+          "direct": [
+            "Proofs.Replacement.finished_spec"
+          ],
+          "dependent": [
+            "Proofs.Replacement.checkManifest_spec",
+            "Proofs.Replacement.checkTerms_spec",
+            "Proofs.Replacement.no_hit_accepts",
+            "Proofs.Replacement.one_cut_accepts",
+            "Proofs.Replacement.one_cut_refuses_altered"
+          ]
+        }
+      ]
+    },
+    {
+      "crate": "plyrune-kernel",
+      "file": "crates/plyrune-kernel/src/replacement.rs",
+      "function": "same_bytes",
+      "lean": "plyrune_kernel.replacement.same_bytes",
+      "theorems": [
+        "Proofs.Replacement.same_bytes_spec"
+      ],
+      "total": "Proofs.Replacement.same_bytes_spec",
+      "subsumes": [],
+      "mutants": [
+        "swap-reviewed-subject"
+      ],
+      "outcome": "proved",
+      "badge": "proved",
+      "fingerprint": "fnv1a64:3af64ac4508cf76b",
+      "inputs": {
+        "lean:literal.matches_at": "fnv1a64:85c60ab43d0254ab",
+        "lean:literal.matches_at_loop": "fnv1a64:640c3ccbe4050aa0",
+        "lean:literal.matches_at_loop.body": "fnv1a64:f48d96df8d974f1f",
+        "lean:replacement.same_bytes": "fnv1a64:0b9a11e14c2ef3ca",
+        "mutant:swap-reviewed-subject": "fnv1a64:58984b606271d23d",
+        "proof:Proofs/Literal.lean": "fnv1a64:9feedd515c59070e",
+        "proof:Proofs/PlyruneKernel.lean": "fnv1a64:b7b48c2ed1b2de23",
+        "proof:Proofs/Replacement.lean": "fnv1a64:0343e252a95d3165",
+        "toolchain": "fnv1a64:bb9e124c5c1e30bd"
+      },
+      "mutant_results": [
+        {
+          "mutant": "swap-reviewed-subject",
+          "status": "killed",
+          "broken": [
+            "Proofs.Replacement.checkManifest_spec",
+            "Proofs.Replacement.same_bytes_spec"
+          ],
+          "direct": [
+            "Proofs.Replacement.same_bytes_spec"
+          ],
+          "dependent": [
+            "Proofs.Replacement.checkManifest_spec",
+            "Proofs.Replacement.no_hit_accepts",
+            "Proofs.Replacement.one_cut_accepts",
+            "Proofs.Replacement.one_cut_refuses_altered"
+          ]
+        }
+      ]
     }
   ],
-  "commit": "665db689a07ff6a663289869760275e2e48d9235"
+  "commit": "aa3e9e07f0e9021422bf2620ea104c4e0514f255"
 }
