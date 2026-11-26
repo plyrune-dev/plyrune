@@ -28,4 +28,5 @@ pub mod binding;
 pub mod capture;
 pub mod literal;
 pub mod range;
+pub mod replacement;
 pub mod snapshot;

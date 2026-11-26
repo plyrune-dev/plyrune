@@ -174,6 +174,12 @@ def capture.ResourceId := Std.U64
 @[reducible]
 def capture.ByteOffset := Std.Usize
 
+/-- [plyrune_kernel::capture::{plyrune_kernel::capture::ByteOffset}::get]:
+    Source: 'crates/plyrune-kernel/src/capture.rs', lines 76:4-78:5
+    Visibility: public -/
+def capture.ByteOffset.get (self : capture.ByteOffset) : Result Std.Usize := do
+  ok self
+
 /-- [plyrune_kernel::snapshot::SnapshotKey]
     Source: 'crates/plyrune-kernel/src/snapshot.rs', lines 6:0-9:1
     Visibility: public -/
@@ -366,5 +372,56 @@ def literal.inventory_matches
   if i != i1
   then ok false
   else literal.inventory_matches_loop expected returned 0#usize
+
+/-- [plyrune_kernel::replacement::lower_cut]:
+    Source: 'crates/plyrune-kernel/src/replacement.rs', lines 20:0-39:1
+    Visibility: public -/
+def replacement.lower_cut
+  (presented : capture.CaptureSubject) (actual : capture.CaptureSubject)
+  (source : Slice Std.U8) (start : capture.ByteOffset)
+  («end» : capture.ByteOffset) :
+  Result (core.result.Result (Std.Usize × Std.Usize) range.RangeRefusal)
+  := do
+  let r ←
+    capture.admit_capture capture.CaptureSchema.V1 capture.CaptureKind.TEXT
+      presented actual source start «end»
+  match r with
+  | core.result.Result.Ok _ =>
+    let i ← capture.ByteOffset.get start
+    let i1 ← capture.ByteOffset.get «end»
+    ok (core.result.Result.Ok (i, i1))
+  | core.result.Result.Err why => ok (core.result.Result.Err why)
+
+/-- [plyrune_kernel::replacement::consume]:
+    Source: 'crates/plyrune-kernel/src/replacement.rs', lines 44:0-50:1
+    Visibility: public -/
+def replacement.consume
+  (candidate : Slice Std.U8) (cursor : Std.Usize) (required : Slice Std.U8) :
+  Result (Option Std.Usize)
+  := do
+  let b ← literal.matches_at candidate required cursor
+  if b
+  then let i := Slice.len required
+       let i1 ← cursor + i
+       ok (some i1)
+  else ok none
+
+/-- [plyrune_kernel::replacement::finished]:
+    Source: 'crates/plyrune-kernel/src/replacement.rs', lines 54:0-56:1
+    Visibility: public -/
+def replacement.finished
+  (consumed : Std.Usize) (total : Std.Usize) : Result Bool := do
+  ok (consumed = total)
+
+/-- [plyrune_kernel::replacement::same_bytes]:
+    Source: 'crates/plyrune-kernel/src/replacement.rs', lines 61:0-63:1
+    Visibility: public -/
+def replacement.same_bytes
+  (expected : Slice Std.U8) (presented : Slice Std.U8) : Result Bool := do
+  let i := Slice.len expected
+  let i1 := Slice.len presented
+  if i = i1
+  then literal.matches_at presented expected 0#usize
+  else ok false
 
 end plyrune_kernel

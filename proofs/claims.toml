@@ -229,3 +229,75 @@ file = "crates/plyrune-kernel/src/literal.rs"
 before = "expected.len() != returned.len()"
 after = "expected.len() < returned.len()"
 direct = ["Proofs.Literal.inventory_matches_spec"]
+
+[[claim]]
+crate = "plyrune-kernel"
+file = "crates/plyrune-kernel/src/replacement.rs"
+function = "lower_cut"
+lean = "plyrune_kernel.replacement.lower_cut"
+theorems = ["Proofs.Replacement.lower_cut_spec"]
+total = "Proofs.Replacement.lower_cut_spec"
+mutants = ["lower-foreign-capture", "lower-wrong-end"]
+
+[[mutant]]
+name = "lower-foreign-capture"
+file = "crates/plyrune-kernel/src/replacement.rs"
+before = "        presented,\n        actual,\n        source,"
+after = "        actual,\n        actual,\n        source,"
+direct = ["Proofs.Replacement.lower_cut_spec"]
+
+[[mutant]]
+name = "lower-wrong-end"
+file = "crates/plyrune-kernel/src/replacement.rs"
+before = "Ok((start.get(), end.get()))"
+after = "Ok((start.get(), start.get()))"
+direct = ["Proofs.Replacement.lower_cut_spec"]
+
+[[claim]]
+crate = "plyrune-kernel"
+file = "crates/plyrune-kernel/src/replacement.rs"
+function = "consume"
+lean = "plyrune_kernel.replacement.consume"
+theorems = ["Proofs.Replacement.consume_spec", "Proofs.Replacement.checkTerms_spec", "Proofs.Replacement.checkManifest_spec"]
+total = "Proofs.Replacement.consume_spec"
+subsumes = ["TAU-N001"]
+mutants = ["accept-altered-term"]
+
+[[mutant]]
+name = "accept-altered-term"
+file = "crates/plyrune-kernel/src/replacement.rs"
+before = "matches_at(candidate, required, cursor)"
+after = "cursor <= candidate.len() && required.len() <= candidate.len() - cursor"
+direct = ["Proofs.Replacement.consume_spec"]
+
+[[claim]]
+crate = "plyrune-kernel"
+file = "crates/plyrune-kernel/src/replacement.rs"
+function = "finished"
+lean = "plyrune_kernel.replacement.finished"
+theorems = ["Proofs.Replacement.finished_spec"]
+total = "Proofs.Replacement.finished_spec"
+mutants = ["accept-extra-edits"]
+
+[[mutant]]
+name = "accept-extra-edits"
+file = "crates/plyrune-kernel/src/replacement.rs"
+before = "    consumed == total"
+after = "    consumed <= total"
+direct = ["Proofs.Replacement.finished_spec"]
+
+[[claim]]
+crate = "plyrune-kernel"
+file = "crates/plyrune-kernel/src/replacement.rs"
+function = "same_bytes"
+lean = "plyrune_kernel.replacement.same_bytes"
+theorems = ["Proofs.Replacement.same_bytes_spec"]
+total = "Proofs.Replacement.same_bytes_spec"
+mutants = ["swap-reviewed-subject"]
+
+[[mutant]]
+name = "swap-reviewed-subject"
+file = "crates/plyrune-kernel/src/replacement.rs"
+before = "matches_at(presented, expected, 0)"
+after = "matches_at(expected, expected, 0)"
+direct = ["Proofs.Replacement.same_bytes_spec"]

@@ -2,7 +2,7 @@
 
 /// The candidate window must fit before indexing either slice. The totality
 /// claim covers all positions, not just those reached by `first_match`.
-fn matches_at(bytes: &[u8], needle: &[u8], pos: usize) -> bool {
+pub(crate) fn matches_at(bytes: &[u8], needle: &[u8], pos: usize) -> bool {
     if pos > bytes.len() {
         return false;
     }

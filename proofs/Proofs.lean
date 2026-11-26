@@ -4,3 +4,4 @@ import Proofs.TautenAssumption
 import Proofs.TautenMachine
 import Proofs.PlyruneKernel
 import Proofs.Literal
+import Proofs.Replacement
