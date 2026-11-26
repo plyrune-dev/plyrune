@@ -18,7 +18,7 @@ layer = "kernel"
 [dependencies]
 
 [package.metadata.charon]
-start_from = ["plyrune_kernel::capture::admit_store_range", "plyrune_kernel::snapshot::inspect_range", "plyrune_kernel::capture::admit_capture"]
+start_from = ["plyrune_kernel::capture::admit_store_range", "plyrune_kernel::snapshot::inspect_range", "plyrune_kernel::capture::admit_capture", "plyrune_kernel::literal::first_match", "plyrune_kernel::literal::inventory_matches"]
 
 [lints.rust]
 unsafe_code = "forbid"

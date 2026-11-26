@@ -178,3 +178,51 @@ file = "crates/plyrune-kernel/src/capture.rs"
 before = "inspect_range(&presented.snapshot, &actual.snapshot,"
 after = "inspect_range(&presented.snapshot, &presented.snapshot,"
 direct = ["Proofs.Capture.admit_capture_spec"]
+
+[[claim]]
+crate = "plyrune-kernel"
+file = "crates/plyrune-kernel/src/literal.rs"
+function = "matches_at"
+lean = "plyrune_kernel.literal.matches_at"
+theorems = ["Proofs.Literal.matches_at_spec"]
+total = "Proofs.Literal.matches_at_spec"
+mutants = ["reject-exact-fit"]
+
+[[mutant]]
+name = "reject-exact-fit"
+file = "crates/plyrune-kernel/src/literal.rs"
+before = "needle.len() > bytes.len() - pos"
+after = "needle.len() >= bytes.len() - pos"
+direct = ["Proofs.Literal.matches_at_spec"]
+
+[[claim]]
+crate = "plyrune-kernel"
+file = "crates/plyrune-kernel/src/literal.rs"
+function = "first_match"
+lean = "plyrune_kernel.literal.first_match"
+theorems = ["Proofs.Literal.first_match_spec"]
+total = "Proofs.Literal.first_match_spec"
+mutants = ["skip-initial-match"]
+
+[[mutant]]
+name = "skip-initial-match"
+file = "crates/plyrune-kernel/src/literal.rs"
+before = "let mut pos = 0;"
+after = "let mut pos = 1;"
+direct = ["Proofs.Literal.first_match_spec"]
+
+[[claim]]
+crate = "plyrune-kernel"
+file = "crates/plyrune-kernel/src/literal.rs"
+function = "inventory_matches"
+lean = "plyrune_kernel.literal.inventory_matches"
+theorems = ["Proofs.Literal.inventory_matches_spec"]
+total = "Proofs.Literal.inventory_matches_spec"
+mutants = ["accept-missing-zero-member"]
+
+[[mutant]]
+name = "accept-missing-zero-member"
+file = "crates/plyrune-kernel/src/literal.rs"
+before = "expected.len() != returned.len()"
+after = "expected.len() < returned.len()"
+direct = ["Proofs.Literal.inventory_matches_spec"]

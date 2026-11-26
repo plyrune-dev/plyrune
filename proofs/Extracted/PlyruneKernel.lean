@@ -234,4 +234,137 @@ def capture.admit_capture
             «end»
       else ok (core.result.Result.Err range.RangeRefusal.WrongStore)
 
+/-- [plyrune_kernel::literal::matches_at]: loop body 0:
+    Source: 'crates/plyrune-kernel/src/literal.rs', lines 13:4-20:1 -/
+@[rust_loop_body]
+def literal.matches_at_loop.body
+  (bytes : Slice Std.U8) (needle : Slice Std.U8) (pos : Std.Usize)
+  (j : Std.Usize) :
+  Result (ControlFlow Std.Usize Bool)
+  := do
+  let i := Slice.len needle
+  if j < i
+  then
+    let i1 ← pos + j
+    let i2 ← Slice.index_usize bytes i1
+    let i3 ← Slice.index_usize needle j
+    if i2 != i3
+    then ok (done false)
+    else let j1 ← j + 1#usize
+         ok (cont j1)
+  else ok (done true)
+
+/-- [plyrune_kernel::literal::matches_at]: loop 0:
+    Source: 'crates/plyrune-kernel/src/literal.rs', lines 13:4-20:1 -/
+@[rust_loop]
+def literal.matches_at_loop
+  (bytes : Slice Std.U8) (needle : Slice Std.U8) (pos : Std.Usize)
+  (j : Std.Usize) :
+  Result Bool
+  := do
+  loop
+    (fun j1 => literal.matches_at_loop.body bytes needle pos j1)
+    j
+
+/-- [plyrune_kernel::literal::matches_at]:
+    Source: 'crates/plyrune-kernel/src/literal.rs', lines 5:0-20:1 -/
+def literal.matches_at
+  (bytes : Slice Std.U8) (needle : Slice Std.U8) (pos : Std.Usize) :
+  Result Bool
+  := do
+  let i := Slice.len bytes
+  if pos > i
+  then ok false
+  else
+    let i1 := Slice.len needle
+    let i2 := Slice.len bytes
+    let i3 ← i2 - pos
+    if i1 > i3
+    then ok false
+    else literal.matches_at_loop bytes needle pos 0#usize
+
+/-- [plyrune_kernel::literal::first_match]: loop body 0:
+    Source: 'crates/plyrune-kernel/src/literal.rs', lines 30:4-37:1
+    Visibility: public -/
+@[rust_loop_body]
+def literal.first_match_loop.body
+  (bytes : Slice Std.U8) (needle : Slice Std.U8) (pos : Std.Usize) :
+  Result (ControlFlow Std.Usize (Option Std.Usize))
+  := do
+  let i := Slice.len bytes
+  if pos < i
+  then
+    let b ← literal.matches_at bytes needle pos
+    if b
+    then ok (done (some pos))
+    else let pos1 ← pos + 1#usize
+         ok (cont pos1)
+  else ok (done none)
+
+/-- [plyrune_kernel::literal::first_match]: loop 0:
+    Source: 'crates/plyrune-kernel/src/literal.rs', lines 30:4-37:1
+    Visibility: public -/
+@[rust_loop]
+def literal.first_match_loop
+  (bytes : Slice Std.U8) (needle : Slice Std.U8) (pos : Std.Usize) :
+  Result (Option Std.Usize)
+  := do
+  loop
+    (fun pos1 => literal.first_match_loop.body bytes needle pos1)
+    pos
+
+/-- [plyrune_kernel::literal::first_match]:
+    Source: 'crates/plyrune-kernel/src/literal.rs', lines 25:0-37:1
+    Visibility: public -/
+def literal.first_match
+  (bytes : Slice Std.U8) (needle : Slice Std.U8) :
+  Result (Option Std.Usize)
+  := do
+  let b ← core.slice.Slice.is_empty needle
+  if b
+  then ok none
+  else literal.first_match_loop bytes needle 0#usize
+
+/-- [plyrune_kernel::literal::inventory_matches]: loop body 0:
+    Source: 'crates/plyrune-kernel/src/literal.rs', lines 46:4-53:1
+    Visibility: public -/
+@[rust_loop_body]
+def literal.inventory_matches_loop.body
+  (expected : Slice Std.Usize) (returned : Slice Std.Usize) (i : Std.Usize) :
+  Result (ControlFlow Std.Usize Bool)
+  := do
+  let i1 := Slice.len returned
+  if i < i1
+  then
+    let i2 ← Slice.index_usize expected i
+    let i3 ← Slice.index_usize returned i
+    if i2 != i3
+    then ok (done false)
+    else let i4 ← i + 1#usize
+         ok (cont i4)
+  else ok (done true)
+
+/-- [plyrune_kernel::literal::inventory_matches]: loop 0:
+    Source: 'crates/plyrune-kernel/src/literal.rs', lines 46:4-53:1
+    Visibility: public -/
+@[rust_loop]
+def literal.inventory_matches_loop
+  (expected : Slice Std.Usize) (returned : Slice Std.Usize) (i : Std.Usize) :
+  Result Bool
+  := do
+  loop
+    (fun i1 => literal.inventory_matches_loop.body expected returned i1)
+    i
+
+/-- [plyrune_kernel::literal::inventory_matches]:
+    Source: 'crates/plyrune-kernel/src/literal.rs', lines 41:0-53:1
+    Visibility: public -/
+def literal.inventory_matches
+  (expected : Slice Std.Usize) (returned : Slice Std.Usize) : Result Bool := do
+  let i := Slice.len expected
+  let i1 := Slice.len returned
+  if i != i1
+  then ok false
+  else literal.inventory_matches_loop expected returned 0#usize
+
 end plyrune_kernel
