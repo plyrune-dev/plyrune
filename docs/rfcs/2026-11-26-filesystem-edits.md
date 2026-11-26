@@ -1,7 +1,7 @@
 ---
 rfc: 2026-11-26-filesystem-edits
 status: accepted
-implementation: in-progress
+implementation: complete
 issue: https://github.com/plyrune-dev/plyrune/issues/16
 milestone: Land reviewed edits
 ---
@@ -24,3 +24,9 @@ No-change does not populate an output directory. For a real change, `--into` mat
 ### Recovery after interruption
 
 Save the complete JSON from `preview` somewhere **outside the prefix** before applying. If `apply` reports `Partial`/`Unknown`, or dies without a complete response, stop other writers. Use the *saved* `resources`, not a new preview of the mixed tree. Compare each current regular file's SHA-256 with both its `base_sha256` and `output_sha256`; classify it as base only, output only, both, missing or conflict. Check the full set of names, the saved file mode/UID/GID and expected directories, including unexpected entries. A `Complete` response lists successful file renames; do not infer that a missing response means nothing changed. Inspect any `.plyrune-stage~PID` directories; remove only staging files you can positively identify. Preserve partial `--into` output and choose a new empty directory; for in-place edits reconcile conflicting or missing files separately before previewing and authorizing a new task. Never blindly retry, roll back, or apply fresh search/replace to a mixed tree (the replacement might itself contain the needle).
+
+### Exit evidence
+
+[Preview 2](https://github.com/plyrune-dev/plyrune/releases/tag/v0.0.1-preview.2) is built from `4690b8d98e6066d8fb012478e19e314ea579e1b8`. The committed-source fast gate passed, including all 20 Linux edge tests (cooperating lock contention, target substitution, tampered staging, injected failure after rename and real SIGKILL). Full Lean gate on the same release source returned the same 14 claim records and 22 mutant outcomes as the prior semantic gate. **No Lean filesystem or power-loss claim.** A shared build-cache collision during development caused an obsolete kernel module to be linked; release packaging and the fast gate now build snapshot-local target directories.
+
+Static Linux x86-64 binary SHA-256 `875e879ce34207f38dae7949be76e72f369eb1bbca18c8245d87ff43e5038d34`. Draft and anonymous public downloads matched. The [Pages deployment](https://github.com/plyrune-dev/plyrune-dev.github.io/actions/runs/45773794314) served the staged installer, homepage and changelog; a clean install passed `qualification/{inspect,refs,preview,edit}-cli.py`, including both explicit destinations with Git unavailable. A corrupt download left the prior installation intact. The [third Writfold checkpoint](../WRITFOLD-CHECKPOINTS.md#land-reviewed-edits--milestone-11) distinguishes file effects from delivery policy.

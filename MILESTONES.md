@@ -1,6 +1,6 @@
 # Delivery milestones
 
-These are scope/acceptance boundaries, not calendar promises. No milestone is complete in this handover. Work in short vertical slices; stop and reassess at the early measurement gate.
+These are the **original design boundaries**, not calendar promises or live shipping status. For current delivery use the [issue milestones](https://github.com/plyrune-dev/plyrune/milestones). The owner selected a short path to real-file editing: [literal references](docs/rfcs/2026-11-26-literal-references.md) → [checked replacement](docs/rfcs/2026-11-26-reviewed-replacement.md) → [explicit Linux filesystem destinations](docs/rfcs/2026-11-26-filesystem-edits.md). It recomputes on every apply instead of assuming M3 reuse, does not require Git, and makes **no** M4 performance or general workflow claims. The broader retained-session, evaluation and portable-report obligations remain separate.
 
 | Milestone | Depends on | Outcome | Exit evidence |
 |---|---|---|---|
