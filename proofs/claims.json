@@ -18,7 +18,7 @@
       ],
       "outcome": "proved",
       "badge": "proved",
-      "fingerprint": "fnv1a64:b5556c5831f3a109",
+      "fingerprint": "fnv1a64:f9215259e1b2521c",
       "inputs": {
         "lean:binding.IncarnationId": "fnv1a64:a6a275ffb90951c4",
         "lean:binding.OwnerId": "fnv1a64:d24063bf5fe6730a",
@@ -80,7 +80,7 @@
       ],
       "outcome": "proved",
       "badge": "proved",
-      "fingerprint": "fnv1a64:b5556c5831f3a109",
+      "fingerprint": "fnv1a64:f9215259e1b2521c",
       "inputs": {
         "lean:range.RangeRefusal": "fnv1a64:43a13e2d08e0b115",
         "lean:range.admit": "fnv1a64:074bddc930b5303a",
@@ -147,7 +147,7 @@
       ],
       "outcome": "proved",
       "badge": "proved",
-      "fingerprint": "fnv1a64:b5556c5831f3a109",
+      "fingerprint": "fnv1a64:f9215259e1b2521c",
       "inputs": {
         "lean:range.char_boundary": "fnv1a64:9b28bdac2000b248",
         "lean:range.is_continuation": "fnv1a64:ae9403ad37b664a8",
@@ -193,7 +193,7 @@
       ],
       "outcome": "proved",
       "badge": "proved",
-      "fingerprint": "fnv1a64:b5556c5831f3a109",
+      "fingerprint": "fnv1a64:f9215259e1b2521c",
       "inputs": {
         "lean:range.RangeRefusal": "fnv1a64:43a13e2d08e0b115",
         "lean:range.admit": "fnv1a64:074bddc930b5303a",
@@ -240,7 +240,7 @@
       ],
       "outcome": "proved",
       "badge": "proved",
-      "fingerprint": "fnv1a64:b5556c5831f3a109",
+      "fingerprint": "fnv1a64:f9215259e1b2521c",
       "inputs": {
         "lean:binding.IncarnationId": "fnv1a64:a6a275ffb90951c4",
         "lean:binding.OwnerId": "fnv1a64:d24063bf5fe6730a",
@@ -285,7 +285,7 @@
       ],
       "outcome": "proved",
       "badge": "proved",
-      "fingerprint": "fnv1a64:b5556c5831f3a109",
+      "fingerprint": "fnv1a64:f9215259e1b2521c",
       "inputs": {
         "lean:range.RangeRefusal": "fnv1a64:43a13e2d08e0b115",
         "lean:range.admit": "fnv1a64:074bddc930b5303a",
@@ -349,7 +349,7 @@
       ],
       "outcome": "proved",
       "badge": "proved",
-      "fingerprint": "fnv1a64:b5556c5831f3a109",
+      "fingerprint": "fnv1a64:f9215259e1b2521c",
       "inputs": {
         "lean:binding.IncarnationId": "fnv1a64:a6a275ffb90951c4",
         "lean:binding.OwnerId": "fnv1a64:d24063bf5fe6730a",
@@ -440,19 +440,22 @@
         "Proofs.Literal.matches_at_spec"
       ],
       "total": "Proofs.Literal.matches_at_spec",
-      "subsumes": [],
+      "subsumes": [
+        "TAU-N001",
+        "TAU-P003"
+      ],
       "mutants": [
         "reject-exact-fit"
       ],
       "outcome": "proved",
       "badge": "proved",
-      "fingerprint": "fnv1a64:b5556c5831f3a109",
+      "fingerprint": "fnv1a64:f9215259e1b2521c",
       "inputs": {
         "lean:literal.matches_at": "fnv1a64:85c60ab43d0254ab",
         "lean:literal.matches_at_loop": "fnv1a64:640c3ccbe4050aa0",
         "lean:literal.matches_at_loop.body": "fnv1a64:f48d96df8d974f1f",
         "mutant:reject-exact-fit": "fnv1a64:d9d4a2b253160de6",
-        "proof:Proofs/Literal.lean": "fnv1a64:881c90c964a47b9f",
+        "proof:Proofs/Literal.lean": "fnv1a64:9feedd515c59070e",
         "toolchain": "fnv1a64:bb9e124c5c1e30bd"
       },
       "mutant_results": [
@@ -481,13 +484,15 @@
         "Proofs.Literal.first_match_spec"
       ],
       "total": "Proofs.Literal.first_match_spec",
-      "subsumes": [],
+      "subsumes": [
+        "TAU-N001"
+      ],
       "mutants": [
         "skip-initial-match"
       ],
       "outcome": "proved",
       "badge": "proved",
-      "fingerprint": "fnv1a64:b5556c5831f3a109",
+      "fingerprint": "fnv1a64:f9215259e1b2521c",
       "inputs": {
         "lean:literal.first_match": "fnv1a64:f5c90583976a2b1e",
         "lean:literal.first_match_loop": "fnv1a64:81d723dc6d3f6cf4",
@@ -496,7 +501,7 @@
         "lean:literal.matches_at_loop": "fnv1a64:640c3ccbe4050aa0",
         "lean:literal.matches_at_loop.body": "fnv1a64:f48d96df8d974f1f",
         "mutant:skip-initial-match": "fnv1a64:b0445712c2e3c7ed",
-        "proof:Proofs/Literal.lean": "fnv1a64:881c90c964a47b9f",
+        "proof:Proofs/Literal.lean": "fnv1a64:9feedd515c59070e",
         "toolchain": "fnv1a64:bb9e124c5c1e30bd"
       },
       "mutant_results": [
@@ -521,19 +526,22 @@
         "Proofs.Literal.inventory_matches_spec"
       ],
       "total": "Proofs.Literal.inventory_matches_spec",
-      "subsumes": [],
+      "subsumes": [
+        "TAU-N001",
+        "TAU-P003"
+      ],
       "mutants": [
         "accept-missing-zero-member"
       ],
       "outcome": "proved",
       "badge": "proved",
-      "fingerprint": "fnv1a64:b5556c5831f3a109",
+      "fingerprint": "fnv1a64:f9215259e1b2521c",
       "inputs": {
         "lean:literal.inventory_matches": "fnv1a64:1450da4040e69df2",
         "lean:literal.inventory_matches_loop": "fnv1a64:0f45d9d36aa5908d",
         "lean:literal.inventory_matches_loop.body": "fnv1a64:79aa7a9dc5aa5117",
         "mutant:accept-missing-zero-member": "fnv1a64:cd62cde3237d185f",
-        "proof:Proofs/Literal.lean": "fnv1a64:881c90c964a47b9f",
+        "proof:Proofs/Literal.lean": "fnv1a64:9feedd515c59070e",
         "toolchain": "fnv1a64:bb9e124c5c1e30bd"
       },
       "mutant_results": [
@@ -550,5 +558,5 @@
       ]
     }
   ],
-  "commit": "bd42414a3f0a7ba33f92778a26493eb74dd787d1"
+  "commit": "665db689a07ff6a663289869760275e2e48d9235"
 }
