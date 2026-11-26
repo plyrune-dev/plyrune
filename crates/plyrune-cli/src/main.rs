@@ -1,4 +1,10 @@
-//! Inspect an explicitly supplied fixture manifest. Nothing reads a workspace.
+//! Explicit fixture and Linux directory inputs. Only `apply` receives write authority.
+#[cfg(target_os = "linux")]
+mod directory;
+#[cfg(target_os = "linux")]
+mod file_commands;
+#[cfg(target_os = "linux")]
+mod publish;
 mod references;
 mod review;
 use plyrune_core::fixture::{Entry, Fixture, SnapshotDigest};
@@ -25,7 +31,14 @@ struct Row {
     text: String,
 }
 
-const USAGE: &str = "plyrune demo | example | snapshot | inspect DIGEST PATH START END | refs PREFIX NEEDLE | preview PREFIX NEEDLE REPLACEMENT\nsnapshot, inspect, refs and preview read a fixture on stdin. UTF-8 byte offsets start at zero, END exclusive. Preview never writes files.";
+const USAGE: &str = "plyrune demo | example | snapshot | inspect DIGEST PATH START END
+plyrune refs [--root DIR] PREFIX NEEDLE
+plyrune preview [--root DIR] PREFIX NEEDLE REPLACEMENT
+plyrune apply --root DIR PREFIX NEEDLE REPLACEMENT --review ID (--in-place | --into DIR)
+Without --root, read a fixture manifest on stdin. Directory commands require local Linux files.
+PREFIX is a relative directory ending in /. UTF-8 byte offsets start at zero, end exclusive.
+No Git required. Save the preview before applying. In-place edits require a single authorized writer;
+a multi-file change is not atomic. --into accepts a distinct new or empty directory.";
 const EXAMPLE: &[u8] = include_bytes!("../../../examples/input.json");
 
 fn read_manifest() -> Result<Manifest, String> {
@@ -63,7 +76,7 @@ fn admit(manifest: &Manifest) -> Result<Fixture<'_>, String> {
 }
 
 fn hex(digest: SnapshotDigest) -> String {
-    digest.bytes().iter().map(|b| format!("{b:02x}")).collect()
+    review::digits(digest.bytes())
 }
 
 fn parse_digest(input: &str) -> Result<SnapshotDigest, String> {
@@ -128,7 +141,7 @@ fn demo() -> Result<(), String> {
 fn run() -> Result<(), String> {
     let args: Vec<_> = std::env::args_os()
         .skip(1)
-        .take(6)
+        .take(11) // one more than the longest valid invocation; never ignore a trailing argument
         .map(|a| {
             a.into_string()
                 .map_err(|e| format!("argument is not UTF-8: {e:?}"))
@@ -143,6 +156,49 @@ fn run() -> Result<(), String> {
             .lock()
             .write_all(EXAMPLE)
             .map_err(|e| e.to_string()),
+        #[cfg(target_os = "linux")]
+        ["refs", "--root", root, prefix, needle] => file_commands::refs(root, prefix, needle),
+        #[cfg(target_os = "linux")]
+        ["preview", "--root", root, prefix, needle, replacement] => {
+            file_commands::edit(root, prefix, needle, replacement, None)
+        }
+        #[cfg(target_os = "linux")]
+        [
+            "apply",
+            "--root",
+            root,
+            prefix,
+            needle,
+            replacement,
+            "--review",
+            key,
+            "--in-place",
+        ] => file_commands::edit(
+            root,
+            prefix,
+            needle,
+            replacement,
+            Some((key, publish::Destination::InPlace)),
+        ),
+        #[cfg(target_os = "linux")]
+        [
+            "apply",
+            "--root",
+            root,
+            prefix,
+            needle,
+            replacement,
+            "--review",
+            key,
+            "--into",
+            dest,
+        ] => file_commands::edit(
+            root,
+            prefix,
+            needle,
+            replacement,
+            Some((key, publish::Destination::Into(std::path::Path::new(dest)))),
+        ),
         ["refs", prefix, needle] => references::show(&admit(&read_manifest()?)?, prefix, needle),
         ["preview", prefix, needle, replacement] => {
             let manifest = read_manifest()?;

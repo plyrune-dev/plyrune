@@ -6,6 +6,9 @@ trap 'rm -rf "$work"' EXIT
 git archive -o "$work/tree.tar" "$sha"
 tar -xf "$work/tree.tar" -C "$work"
 cd "$work"
+# Workspace crates have the same versions across snapshots. Do not reuse a newer
+# compiler artifact when git archive restores an older source mtime.
+export CARGO_TARGET_DIR="$work/target"
 echo "Plyrune fast gate: $sha"
 sha256sum -c scripts/profile.sha256
 python3 tools/native_reference.py > "$work/native-run.json"
@@ -18,6 +21,7 @@ cargo +1.98.0 build --locked --workspace
 python3 qualification/inspect-cli.py "$CARGO_TARGET_DIR/debug/plyrune"
 python3 qualification/refs-cli.py "$CARGO_TARGET_DIR/debug/plyrune"
 python3 qualification/preview-cli.py "$CARGO_TARGET_DIR/debug/plyrune"
+python3 qualification/edit-cli.py "$CARGO_TARGET_DIR/debug/plyrune"
 python3 qualification/literal-mutants.py
 cargo +1.98.0 tauten check --format json
 cargo +1.98.0 test --locked --workspace

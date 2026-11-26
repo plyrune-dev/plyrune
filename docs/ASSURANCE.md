@@ -84,7 +84,7 @@ The [Rust consumer](../crates/plyrune-core/tests/reviewed_replacement.rs) exerci
 | Wire decode/domain mapping | Production-path checked constructors and adversarial tests; prove selected mappings later | Validity of arbitrary serialized objects |
 | Git/fixture inventory acquisition | Profile-specific validation and tests | Coherent dirty-working-tree snapshots |
 | Source/requirement admission | Host-owned contract | Natural-language truth or complete user intent |
-| Filesystem publication | Deferred to M5 host protocol | Atomicity merely from pre-write validation |
+| Filesystem publication | Linux-only controlled-writer protocol, staged file renames, race/crash and packaged consumer controls | No multi-file atomicity, outsider exclusion or power-loss guarantee |
 
 An abstract unique identifier can simplify a Lean model, but the mapping to concrete framed bytes and digests remains explicit. Avoid importing a cryptographic assumption as an untracked Lean axiom; make external assumptions parameters/premises of the claim.
 

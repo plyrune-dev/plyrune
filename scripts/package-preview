@@ -8,6 +8,7 @@ trap 'rm -rf "$work"' EXIT
 git archive -o "$work/source.tar" HEAD
 tar -xf "$work/source.tar" -C "$work"
 cd "$work"
+export CARGO_TARGET_DIR="$work/target"
 # The linked binary requires no host runtime libraries.
 export RUSTFLAGS="-C target-feature=+crt-static"
 cargo +1.98.0 build --release --locked --target x86_64-unknown-linux-gnu -p plyrune-cli
@@ -20,6 +21,7 @@ if grep -q INTERP program-headers || grep -q NEEDED dynamic; then exit 1; fi
 python3 qualification/inspect-cli.py "$work/$asset"
 python3 qualification/refs-cli.py "$work/$asset"
 python3 qualification/preview-cli.py "$work/$asset"
+python3 qualification/edit-cli.py "$work/$asset"
 mkdir -p "$out"
 cp "$asset" "$out/"
 sha256sum "$asset" > "$out/$asset.sha256"
