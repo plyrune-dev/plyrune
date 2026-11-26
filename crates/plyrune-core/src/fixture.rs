@@ -91,6 +91,17 @@ struct ResourceRow<'a> {
     ordinal: ResourceId,
 }
 
+/// Shared fixture-v1 path grammar, also used for the path part of directory prefixes.
+pub(crate) fn valid_path(path: &str) -> bool {
+    path.len() <= 255
+        && path.split('/').all(|part| {
+            !matches!(part, "" | "." | "..")
+                && part
+                    .bytes()
+                    .all(|b| b.is_ascii_alphanumeric() || matches!(b, b'-' | b'_' | b'.'))
+        })
+}
+
 fn frame(hash: &mut Sha256, bytes: &[u8]) -> Result<(), Refusal> {
     let n = u64::try_from(bytes.len()).map_err(Refusal::Length)?;
     hash.update(n.to_be_bytes());
@@ -110,14 +121,7 @@ impl<'a> Fixture<'a> {
         let mut resources = BTreeMap::new();
         let mut total = 0usize;
         for entry in entries {
-            if entry.path.len() > 255
-                || !entry.path.split('/').all(|part| {
-                    !matches!(part, "" | "." | "..")
-                        && part
-                            .bytes()
-                            .all(|b| b.is_ascii_alphanumeric() || matches!(b, b'-' | b'_' | b'.'))
-                })
-            {
+            if !valid_path(entry.path) {
                 return Err(Refusal::InvalidPath);
             }
             if entry.mode != "regular" {

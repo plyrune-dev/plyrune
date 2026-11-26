@@ -1,4 +1,5 @@
 //! Inspect an explicitly supplied fixture manifest. Nothing reads a workspace.
+mod references;
 use plyrune_core::fixture::{Entry, Fixture, SnapshotDigest};
 use serde::Deserialize;
 use std::io::{Read, Write};
@@ -23,7 +24,7 @@ struct Row {
     text: String,
 }
 
-const USAGE: &str = "plyrune demo | example | snapshot | inspect DIGEST PATH START END\nsnapshot and inspect read a fixture on stdin. Offsets are zero-based UTF-8 bytes; END is exclusive.";
+const USAGE: &str = "plyrune demo | example | snapshot | inspect DIGEST PATH START END | refs PREFIX NEEDLE\nsnapshot, inspect and refs read a fixture on stdin. References are exact text occurrences; offsets are zero-based UTF-8 bytes, END exclusive.";
 const EXAMPLE: &[u8] = include_bytes!("../../../examples/input.json");
 
 fn read_manifest() -> Result<Manifest, String> {
@@ -141,6 +142,7 @@ fn run() -> Result<(), String> {
             .lock()
             .write_all(EXAMPLE)
             .map_err(|e| e.to_string()),
+        ["refs", prefix, needle] => references::show(&admit(&read_manifest()?)?, prefix, needle),
         ["snapshot"] => {
             let manifest = read_manifest()?;
             let fixture = admit(&manifest)?;

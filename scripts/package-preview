@@ -18,6 +18,7 @@ readelf -l "$asset" > program-headers
 readelf -d "$asset" > dynamic
 if grep -q INTERP program-headers || grep -q NEEDED dynamic; then exit 1; fi
 python3 qualification/inspect-cli.py "$work/$asset"
+python3 qualification/refs-cli.py "$work/$asset"
 mkdir -p "$out"
 cp "$asset" "$out/"
 sha256sum "$asset" > "$out/$asset.sha256"

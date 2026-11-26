@@ -33,6 +33,10 @@ The view contains `legacy_endpoint`. Edit any resource's text in `fixture.json` 
 
 For an in-process harness, bind an admitted `Fixture` to a host-issued `StoreBinding`, then use `BoundFixture::open(path)` to select the intended resource. `resource.capture(ByteOffset::new(start), ByteOffset::new(end))` retains its identity and byte coordinates. Resolve with `resource.resolve(&capture)`; supplying a different resource with identical text is an error, not a successful read. No bytes are copied into the capture, and no handle crosses a process boundary. The [external library consumer](crates/plyrune-core/tests/fixture_captures.rs) shows the complete calls. See the [capture RFC](docs/rfcs/2026-11-25-fixture-captures.md) for host identity assumptions and refusal order.
 
+### Find references (source build)
+
+`plyrune refs config/ legacy_endpoint < fixture.json` finds **literal text**, not a programming-language symbol. In the bundled example it returns six locations in three files plus a fourth row, `config/unchanged.env`, with no matches. `docs/notes.txt` is outside the prefix. On a refused query there is no partial selection to mistake for a successful search. The [literal references RFC](docs/rfcs/2026-11-26-literal-references.md) describes exactly what gets counted.
+
 ### Build from source
 
 Use Docker Compose on linux/amd64. The tools image includes Tauten's pinned

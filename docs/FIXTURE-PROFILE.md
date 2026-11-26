@@ -38,6 +38,8 @@ requirement in separate operations.
 The [probe](../qualification/splice-probe/) exercises the last byte comparison.
 `plyrune snapshot` implements input path/mode/encoding admission, inventory
 and byte limits, and digest framing; the transport adds a 1 MiB JSON limit.
-Canonicalization is tested against independent vectors, not proved. Match
-and candidate limits, requirement/report admission, and a stable wire
-schema remain obligations for the product implementation.
+Canonicalization is tested against independent vectors, not proved. `refs`
+charges at most 67,108,864 prospective byte comparisons across scoped
+resources: for text of length `n` and needle of length `m`, charge
+`(n-m+1)*m` if `m <= n`, otherwise zero. A refused budget produces no
+selection. The CLI fixture transport is not a stable interchange schema.

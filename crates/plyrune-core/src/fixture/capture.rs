@@ -29,6 +29,11 @@ impl<'a> BoundFixture<'a> {
         Self { fixture, store }
     }
 
+    /// Borrow this store's admitted inventory without detaching its identity.
+    pub fn fixture(&self) -> &Fixture<'a> {
+        &self.fixture
+    }
+
     /// Open an exact path. The caller chooses the intended resource independently of a capture.
     ///
     /// # Errors
