@@ -1,5 +1,6 @@
 //! Inspect an explicitly supplied fixture manifest. Nothing reads a workspace.
 mod references;
+mod review;
 use plyrune_core::fixture::{Entry, Fixture, SnapshotDigest};
 use serde::Deserialize;
 use std::io::{Read, Write};
@@ -24,7 +25,7 @@ struct Row {
     text: String,
 }
 
-const USAGE: &str = "plyrune demo | example | snapshot | inspect DIGEST PATH START END | refs PREFIX NEEDLE\nsnapshot, inspect and refs read a fixture on stdin. References are exact text occurrences; offsets are zero-based UTF-8 bytes, END exclusive.";
+const USAGE: &str = "plyrune demo | example | snapshot | inspect DIGEST PATH START END | refs PREFIX NEEDLE | preview PREFIX NEEDLE REPLACEMENT\nsnapshot, inspect, refs and preview read a fixture on stdin. UTF-8 byte offsets start at zero, END exclusive. Preview never writes files.";
 const EXAMPLE: &[u8] = include_bytes!("../../../examples/input.json");
 
 fn read_manifest() -> Result<Manifest, String> {
@@ -143,6 +144,13 @@ fn run() -> Result<(), String> {
             .write_all(EXAMPLE)
             .map_err(|e| e.to_string()),
         ["refs", prefix, needle] => references::show(&admit(&read_manifest()?)?, prefix, needle),
+        ["preview", prefix, needle, replacement] => {
+            let manifest = read_manifest()?;
+            let bound = review::bind(admit(&manifest)?);
+            let checked = plyrune_core::replacement::preview(&bound, prefix, needle, replacement)
+                .map_err(|e| format!("preview: {e:?}"))?;
+            review::show(&checked, replacement, checked.review_id(), "fixture stdin")
+        }
         ["snapshot"] => {
             let manifest = read_manifest()?;
             let fixture = admit(&manifest)?;

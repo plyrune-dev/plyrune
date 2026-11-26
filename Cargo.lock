@@ -86,6 +86,7 @@ dependencies = [
  "plyrune-core",
  "serde",
  "serde_json",
+ "sha2",
 ]
 
 [[package]]
@@ -94,6 +95,7 @@ version = "0.0.0"
 dependencies = [
  "plyrune-kernel",
  "sha2",
+ "splicery-splice",
 ]
 
 [[package]]
@@ -171,6 +173,11 @@ dependencies = [
  "cpufeatures",
  "digest",
 ]
+
+[[package]]
+name = "splicery-splice"
+version = "0.1.0-dev.0"
+source = "git+https://github.com/writfold-dev/splicery?rev=632a90fd96e920fbac7ee5818f989739c1617062#632a90fd96e920fbac7ee5818f989739c1617062"
 
 [[package]]
 name = "syn"

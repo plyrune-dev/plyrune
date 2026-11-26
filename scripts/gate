@@ -17,6 +17,7 @@ cargo +1.98.0 fmt --all -- --check
 cargo +1.98.0 build --locked --workspace
 python3 qualification/inspect-cli.py "$CARGO_TARGET_DIR/debug/plyrune"
 python3 qualification/refs-cli.py "$CARGO_TARGET_DIR/debug/plyrune"
+python3 qualification/preview-cli.py "$CARGO_TARGET_DIR/debug/plyrune"
 python3 qualification/literal-mutants.py
 cargo +1.98.0 tauten check --format json
 cargo +1.98.0 test --locked --workspace

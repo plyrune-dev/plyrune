@@ -4,7 +4,7 @@ use serde::{Serialize, Serializer};
 use std::io::{BufWriter, Write};
 
 /// Serialize the borrowed rows directly, without constructing a second match list.
-struct Sequence<I>(I);
+pub(super) struct Sequence<I>(pub(super) I);
 
 impl<I> Serialize for Sequence<I>
 where

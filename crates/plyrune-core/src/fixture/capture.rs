@@ -79,6 +79,17 @@ impl<'a> FixtureResource<'a> {
         Ok(capture)
     }
 
+    /// Lower the sealed capture against this independently opened target.
+    pub(crate) fn lower_cut(&self, capture: &TextCapture) -> Result<(usize, usize), RangeRefusal> {
+        plyrune_kernel::replacement::lower_cut(
+            &capture.subject,
+            &self.subject,
+            self.text.as_bytes(),
+            capture.start,
+            capture.end,
+        )
+    }
+
     /// Resolve against this resource, not a resource named by the capture's caller.
     /// Returns the exact original slice without allocating, copying, or applying a view budget.
     ///

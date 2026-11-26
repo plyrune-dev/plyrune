@@ -11,4 +11,5 @@
 //! The fixture adapter validates explicit bytes only.
 
 pub mod fixture;
+pub mod replacement;
 pub mod selection;
