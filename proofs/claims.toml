@@ -186,6 +186,7 @@ function = "matches_at"
 lean = "plyrune_kernel.literal.matches_at"
 theorems = ["Proofs.Literal.matches_at_spec"]
 total = "Proofs.Literal.matches_at_spec"
+subsumes = ["TAU-N001", "TAU-P003"]
 mutants = ["reject-exact-fit"]
 
 [[mutant]]
@@ -202,6 +203,7 @@ function = "first_match"
 lean = "plyrune_kernel.literal.first_match"
 theorems = ["Proofs.Literal.first_match_spec"]
 total = "Proofs.Literal.first_match_spec"
+subsumes = ["TAU-N001"]
 mutants = ["skip-initial-match"]
 
 [[mutant]]
@@ -218,6 +220,7 @@ function = "inventory_matches"
 lean = "plyrune_kernel.literal.inventory_matches"
 theorems = ["Proofs.Literal.inventory_matches_spec"]
 total = "Proofs.Literal.inventory_matches_spec"
+subsumes = ["TAU-N001", "TAU-P003"]
 mutants = ["accept-missing-zero-member"]
 
 [[mutant]]

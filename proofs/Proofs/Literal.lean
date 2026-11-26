@@ -86,7 +86,8 @@ theorem first_match_spec (xs pat : Slice U8) :
     literal.first_match xs pat ⦃ r => Earliest xs.val pat.val r ⦄ := by
   simp only [literal.first_match, core.slice.Slice.is_empty, Slice.length, bind_ok, decide_eq_true_eq]
   split_ifs with hempty
-  · exact (by simpa only [WP.spec_ok, Earliest] using Or.inl hempty)
+  · simp only [WP.spec_ok, Earliest]
+    exact Or.inl hempty
   · have hne : 0 < pat.val.length := by omega
     unfold literal.first_match_loop
     apply loop.spec_decr_nat (fun p : Usize => xs.val.length - p.val)
@@ -99,7 +100,8 @@ theorem first_match_spec (xs pat : Slice U8) :
         apply WP.spec_bind (matches_at_spec xs pat p)
         intro m hm
         split_ifs with hit
-        · exact (by simpa only [WP.spec_ok, Earliest] using And.intro hne ⟨hm.mp hit, skipped⟩)
+        · simp only [WP.spec_ok, Earliest]
+          exact ⟨hne, hm.mp hit, skipped⟩
         · apply WP.spec_bind (Usize.add_spec (by scalar_tac))
           intro next hnext
           simp only [WP.spec_ok]
@@ -108,7 +110,8 @@ theorem first_match_spec (xs pat : Slice U8) :
             by_cases before : k < p.val
             · exact skipped k before
             · have eq : k = p.val := by scalar_tac
-              exact eq ▸ fun occ => hit (hm.mpr occ)
+              subst k
+              exact fun occ => hit (hm.mpr occ)
           · scalar_tac
       · simp only [WP.spec_ok, Earliest]
         right

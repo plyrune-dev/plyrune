@@ -131,10 +131,10 @@ impl<'f, 'src> Selection<'f, 'src> {
         if !std::ptr::eq(self.fixture, bound.fixture()) {
             return Err(SelectionRefusal::WrongFixture);
         }
-        let index = self
-            .rows
-            .binary_search_by(|row| row.path.cmp(path))
-            .map_err(|_| SelectionRefusal::UnknownMatch)?;
+        // Err carries an insertion position, not a matching resource.
+        let Ok(index) = self.rows.binary_search_by(|row| row.path.cmp(path)) else {
+            return Err(SelectionRefusal::UnknownMatch);
+        };
         let range = self
             .rows
             .get(index)
